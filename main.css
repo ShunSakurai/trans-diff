@@ -1,0 +1,48 @@
+body {
+  font-family: sans-serif;
+}
+
+.browse {
+  font-size: 15px;
+}
+
+.center {
+  left: 45%;
+  position: absolute;
+  top: 45%;
+  transform: translateX(-50%);
+  transform: translateY(-50%);
+}
+
+.compare {
+  background-color: lightblue;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  height: 50px;
+  position: absolute;
+  width: 200px;
+}
+
+.drag {
+  background: #eee;
+  border: solid;
+  border-color: #ddd;
+  height: 90%;
+  position: relative;
+}
+
+.file {
+  height: 200px;
+  width: 35%;
+}
+
+.file1 {
+  left: 10%;
+  position: absolute;
+}
+
+.file2 {
+  left: 55%;
+  position: absolute;
+}
