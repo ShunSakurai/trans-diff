@@ -1,7 +1,7 @@
 # trans-diff
 Create a diff table from different versions of xliff files
 
-### Roadmap:
+### Roadmap
 - [ ] Support single file
 - [ ] Save comments
 - [ ] Support multiple files (detect file IDs)
