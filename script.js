@@ -51,17 +51,14 @@ compare.addEventListener('click', function(e){
   if (hasError()) return;
   const reader1 = new FileReader();
   const reader2 = new FileReader();
-  let contents;
   reader1.onload = function(e){
     if (reader2.readyState == 2) {
-      contents = [reader1.result, reader2.result];
-      compareContents(contents);
+      compareContents([reader1.result, reader2.result]);
     }
   };
   reader2.onload = function(e){
     if (reader1.readyState == 2) {
-      contents = [reader1.result, reader2.result];
-      compareContents(contents);
+      compareContents([reader1.result, reader2.result]);
     }
   };
   reader1.readAsText(files1[0]);
@@ -75,24 +72,55 @@ const hasError = function() {
     (files1.length != files2.length) ||
     (!files1[0].name.endsWith('.xlf') || !files2[0].name.endsWith('.xlf'))
   ) {
-    message.textContent = 'Error';
-    setTimeout(function(){
-      message.textContent = '';
-    }, 5000);
+    displayError();
     return true;
   }
 };
 
+const displayError = function() {
+  message.textContent = 'Error';
+  setTimeout(function(){
+    message.textContent = '';
+  }, 5000);
+};
+
 const compareContents = function(contents) {
   contents = contents.map(content => parseXliff(content));
-  console.log(contents);
+  if (
+    (contents[0].length != contents[1].length) ||
+    (contents[0][0] != contents[1][0])
+  ) {
+    displayError();
+    return;
+  }
   let results = [];
+  for (let i = 0; i < contents[0].length; i++) {
+    let dpTable = diffDP(contents[0][i], contents[1][i]);
+    let ses = diffSES(dpTable);
+    let diffString1;
+    let diffString2;
+    results.push(i, diffString1, diffString2);
+  }
   displayResults(results);
 };
 
 const parseXliff = function(content) {
-  return content;
+  let parsedContent = [];
+  parsedContent.push(/<file [^>]*?original="([^"]+?)"/.exec(content)[1]);
+  let match;
+  const regex = new RegExp(/<target[^>]*?>([^<]*?)<\/target>/g);
+  while (match = regex.exec(content)) {
+    parsedContent.push(match[1]);
+  }
+  return parsedContent;
 };
 
-const displayResults = function() {
+const diffDP = function(string1, string2) {
+};
+
+const diffSES = function(dpTable) {
+
+};
+
+const displayResults = function(results) {
 };
