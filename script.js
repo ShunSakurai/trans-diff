@@ -96,10 +96,8 @@ const compareContents = function(contents) {
   let results = [];
   for (let i = 0; i < contents[0].length; i++) {
     let dpTable = diffDP(contents[0][i], contents[1][i]);
-    let ses = diffSES(dpTable);
-    let diffString1;
-    let diffString2;
-    results.push(i, diffString1, diffString2);
+    let [diffString1, diffString2] = diffSES(dpTable, contents[0][i], contents[1][i]);
+    results.push([i, diffString1, diffString2]);
   }
   displayResults(results);
 };
@@ -116,10 +114,86 @@ const parseXliff = function(content) {
 };
 
 const diffDP = function(string1, string2) {
+  // reference:
+  // https://qiita.com/3000manJPY/items/c28ed74d2d06971c34ef
+  const length1 = string1.length;
+  const length2 = string2.length;
+  const dpTable = new Array(length1 + 1).fill(0).map(row => new Array(length2 + 1).fill(0));
+  for (let i = 0; i <= length1; i++) dpTable[i][0] = i;
+  for (let j = 0; j <= length2; j++) dpTable[0][j] = j;
+  for (let i = 0; i < length1; i++) {
+    for (let j = 0; j < length2; j++) {
+      dpTable[i + 1][j + 1] = Math.min(
+        dpTable[i][j + 1] + 1, // insertion
+        dpTable[i + 1][j] + 1, // deletion
+        dpTable[i][j] + 1 * (string1[i] != string2[j]) // replacement
+      );
+    }
+  }
+  return dpTable;
 };
 
-const diffSES = function(dpTable) {
-
+const diffSES = function(dpTable, string1, string2) {
+  // reference:
+  // https://qiita.com/yumura_s/items/43ad19fce4739201705e
+  // https://gist.github.com/gurimusan/7e554eb12f9f59880053
+  let i = dpTable.length - 1;
+  let j = dpTable[0].length - 1;
+  let ses1 = [];
+  let ses2 = [];
+  let ins = 'ins';
+  let del = 'del';
+  let keep = 'keep';
+  while (i > 0 || j > 0) {
+    if (i == 0) {
+      ses2.unshift([ins, string2[j - 1]]);
+      j--;
+    } else if (j == 0) {
+      ses1.unshift([del, string1[i - 1]]);
+      i--;
+    } else if (string1[i - 1] == string2[j - 1]) {
+      ses1.unshift([keep, string1[i - 1]]);
+      ses2.unshift([keep, string1[i - 1]]);
+      i--;
+      j--;
+    } else if (dpTable[i - 1][j - 1] <= Math.min(dpTable[i - 1][j], dpTable[i][j - 1])) {
+      ses1.unshift([del, string1[i - 1]]);
+      ses2.unshift([ins, string2[j - 1]]);
+      i--;
+      j--;
+    } else if (dpTable[i][j - 1] <= dpTable[i - 1][j]) {
+      ses2.unshift([ins, string2[j - 1]]);
+      j--;
+    } else {
+      ses1.unshift([del, string1[i - 1]]);
+      i--;
+    }
+  }
+  let diffStrings = [];
+  for (let ses of [ses1, ses2]) {
+    let diffString = '';
+    let previousMode = keep;
+    for (let k = 0; k < ses.length; k++) {
+      let mode = ses[k][0];
+      if (mode != previousMode) {
+        if (previousMode != keep) {
+          diffString += `</${previousMode}>`;
+        } else {
+          diffString += `<${mode}>`;
+        }
+        previousMode = mode;
+      }
+      diffString += ses[k][1];
+      if (k == ses.length - 1) {
+        if (mode != keep) {
+          diffString += `</${mode}>`;
+        }
+      }
+    }
+    diffStrings.push(diffString);
+  }
+  console.log(diffStrings);
+  return diffStrings;
 };
 
 const displayResults = function(results) {
