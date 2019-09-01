@@ -85,7 +85,8 @@ const displayError = function() {
 };
 
 const compareContents = function(contents) {
-  contents = contents.map(content => parseXliff(content));
+  const source = parseXliff(contents[0], 'source');
+  contents = contents.map(content => parseXliff(content, 'target'));
   if (
     (contents[0].length != contents[1].length) ||
     (contents[0][0] != contents[1][0])
@@ -97,16 +98,16 @@ const compareContents = function(contents) {
   for (let i = 0; i < contents[0].length; i++) {
     let dpTable = diffDP(contents[0][i], contents[1][i]);
     let [diffString1, diffString2] = diffSES(dpTable, contents[0][i], contents[1][i]);
-    results.push([i, diffString1, diffString2]);
+    results.push([i, source[i], diffString1, diffString2]);
   }
   displayResults(results);
 };
 
-const parseXliff = function(content) {
+const parseXliff = function(content, language) {
   let parsedContent = [];
   parsedContent.push(/<file [^>]*?original="([^"]+?)"/.exec(content)[1]);
   let match;
-  const regex = new RegExp(/<target[^>]*?>([^<]*?)<\/target>/g);
+  const regex = new RegExp(`<${language}[^>]*?>([^<]*?)</${language}>`, 'g');
   while (match = regex.exec(content)) {
     parsedContent.push(match[1]);
   }
@@ -192,9 +193,9 @@ const diffSES = function(dpTable, string1, string2) {
     }
     diffStrings.push(diffString);
   }
-  console.log(diffStrings);
   return diffStrings;
 };
 
 const displayResults = function(results) {
+  console.log(results);
 };
