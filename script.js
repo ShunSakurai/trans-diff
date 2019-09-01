@@ -49,9 +49,23 @@ fileinput2.addEventListener('change', function(e){
 
 compare.addEventListener('click', function(e){
   if (hasError()) return;
-  readFiles();
-  compareContents();
-  displayResults();
+  const reader1 = new FileReader();
+  const reader2 = new FileReader();
+  let contents;
+  reader1.onload = function(e){
+    if (reader2.readyState == 2) {
+      contents = [reader1.result, reader2.result];
+      compareContents(contents);
+    }
+  };
+  reader2.onload = function(e){
+    if (reader1.readyState == 2) {
+      contents = [reader1.result, reader2.result];
+      compareContents(contents);
+    }
+  };
+  reader1.readAsText(files1[0]);
+  reader2.readAsText(files2[0]);
 });
 
 const hasError = function() {
@@ -69,14 +83,16 @@ const hasError = function() {
   }
 };
 
-const readFiles = function() {
-  console.log('readFiles');
+const compareContents = function(contents) {
+  contents = contents.map(content => parseXliff(content));
+  console.log(contents);
+  let results = [];
+  displayResults(results);
 };
 
-const compareContents = function() {
-  console.log('compareContents');
+const parseXliff = function(content) {
+  return content;
 };
 
 const displayResults = function() {
-  console.log('displayResults');
 };
