@@ -1,0 +1,249 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Trans Diff results</title>
+    <style type="text/css">
+      button { margin-bottom: 10px; margin-top: 5px; }
+      button, th { background: #155799;  color: #fff; opacity: 0.7; }
+      del { color: #9F0000; }
+      input { width: 100%; }
+      ins { color: green; }
+      table { border-collapse: collapse; table-layout: fixed; white-space: pre-wrap; width: 100%; }
+      td { word-wrap: break-word; }
+      .different { background: #dff; }
+      .index { width: 5%; }
+      .string { width: 31%; }
+    </style>
+
+  <script type="text/javascript">
+  document.switchedOn = {'unchanged': false};
+  document.styleIndices = {};
+  document.displayNone = {};
+
+  var assessKey = function(event) {
+    if (event.ctrlKey || event.altKey || event.metaKey
+    || document.activeElement.nodeName === 'INPUT') {
+      return;
+    }
+    switch (event.keyCode){
+      case 'C'.charCodeAt(0):
+        clearFilter();
+        break;
+      case 'U'.charCodeAt(0):
+        toggleUnchanged();
+        break;
+    }
+  };
+
+  document.addEventListener('keydown', assessKey);
+
+  var insertStyle = function(key, style) {
+    var styleSheet = document.styleSheets[0];
+    var styleLength = styleSheet.cssRules.length;
+    styleSheet.insertRule(style, styleLength);
+    document.styleIndices[key] = styleLength;
+  };
+
+  var deleteStyle = function(key) {
+    var styleSheet = document.styleSheets[0];
+    var removeIndex = document.styleIndices[key];
+    styleSheet.deleteRule(removeIndex);
+    delete document.styleIndices[key];
+    for (var otherKey in document.styleIndices) {
+      if (document.styleIndices.hasOwnProperty(otherKey) &&
+      typeof document.styleIndices[otherKey] === 'number' &&
+      document.styleIndices[otherKey] > removeIndex) {
+        document.styleIndices[otherKey] = document.styleIndices[otherKey] - 1;
+      }
+    }
+  };
+
+  var toggleSegmentVisibility = function (allTr) {
+    var displayNoneArray = new Array(allTr.length).fill(false);
+    var n = allTr.length;
+    for (var key in document.displayNone) {
+      if (document.displayNone.hasOwnProperty(key)
+      && typeof document.displayNone[key] === 'object') {
+        for (var i = 0; i < n; i ++){
+          displayNoneArray[i] = displayNoneArray[i] || document.displayNone[key][i];
+        }
+      }
+    }
+    for (var j = 0; j < n; j ++){
+      allTr[j].style.display = displayNoneArray[j]? 'None': '';
+    }
+  };
+
+  var include = function(range, string) {
+    return range.indexOf(string) === -1;
+  };
+
+  var exclude = function(range, string) {
+    if (string === '') {
+      return;
+    }
+    return range.indexOf(string) !== -1;
+  };
+
+  var includeRegex = function(range, string) {
+    try {
+      var regex = new RegExp(string);
+      return !regex.exec(range);
+    } catch (e) {
+      if (e instanceof SyntaxError){
+        return;
+      } else {
+        throw e;
+      }
+    }
+  };
+
+  var excludeRegex = function(range, string) {
+    if (string === '') {
+      return;
+    }
+    try {
+      var regex = new RegExp(string);
+      return regex.exec(range);
+    } catch (e) {
+      if (e instanceof SyntaxError){
+        return;
+      } else {
+        throw e;
+      }
+    }
+  };
+
+  var numberRange = function(range, string) {
+    var match = /^(\d+)\-(\d+)$/.exec(string);
+    var numberInRange = parseInt(range);
+    if (!match || isNaN(numberInRange)) {
+      return;
+    }
+    return !(match[1] <= numberInRange && numberInRange <= match[2]);
+  };
+
+  var filterSegments = function(element, func) {
+    var td = element.parentNode;
+    var column = Array.prototype.indexOf.call(td.parentNode.children, td);
+    var filterId = func.name + 'Filter' + column;
+    var allTr = document.querySelectorAll('#results tr');
+
+    if (!element.value) {
+      delete document.displayNone[filterId];
+    } else {
+      document.displayNone[filterId] = [];
+      for (var i = 0, n = allTr.length; i < n; i ++) {
+        if (allTr[i].children[0].nodeName === 'TD'
+        && func(allTr[i].children[column].textContent, element.value)){
+          document.displayNone[filterId].push(true);
+        } else {
+          document.displayNone[filterId].push(false);
+        }
+      }
+    }
+    toggleSegmentVisibility(allTr);
+  };
+
+  var clearFilter = function () {
+    ['include', 'exclude', 'includeRegex', 'excludeRegex', 'numberRange'].forEach(function(id){
+      var filterTd = document.getElementById(id).children;
+      for (var td in filterTd) {
+        if (filterTd.hasOwnProperty(td)
+        && filterTd[td].nodeName === 'TD'){
+          for (var input in filterTd[td].children){
+            if (filterTd[td].children.hasOwnProperty(input)
+            && filterTd[td].children[input].nodeName === 'INPUT'){
+              filterTd[td].children[input].value = '';
+            }
+          }
+        }
+      }
+      for (var key in document.displayNone){
+        if (document.displayNone.hasOwnProperty(key)
+        && key.indexOf('Filter') >= 0) {
+          delete document.displayNone[key];
+        }
+      }
+    });
+    var allTr = document.querySelectorAll('#results tr');
+    toggleSegmentVisibility(allTr);
+  };
+
+  var toggleUnchanged = function() {
+    document.switchedOn.unchanged = !document.switchedOn.unchanged;
+    var allTr = document.querySelectorAll('#results tr');
+    if (document.switchedOn.unchanged){
+      document.displayNone.unchanged = [];
+      for (var i = 0, n = allTr.length; i < n; i ++) {
+        if (allTr[i].classList.contains('same')) {
+          document.displayNone.unchanged.push(true);
+        } else {
+          document.displayNone.unchanged.push(false);
+        }
+      }
+      document.getElementById('buttonUnchanged').innerHTML = 'Show <u>U</u>nchanged Segments';
+    } else {
+      delete document.displayNone.unchanged;
+      document.getElementById('buttonUnchanged').innerHTML ='Hide <u>U</u>nchanged Segments';
+    }
+    toggleSegmentVisibility(allTr);
+  };
+
+  </script>
+  </head>
+  <body>
+    <div class="header">
+      <button id="buttonUnchanged" onclick="toggleUnchanged()" style="font-size: 15px;">Hide <u>U</u>nchanged Segments</button>
+
+    <table>
+      <tbody>
+        <tr id="include">
+          <td class="index"><input oninput="filterSegments(this, include)" placeholder=""></td>
+          <td class="string"><input oninput="filterSegments(this, include)"></td>
+          <td class="string"><input oninput="filterSegments(this, include)"></td>
+          <td class="string"><input oninput="filterSegments(this, include)"></td>
+        </tr>
+        <tr id="exclude">
+          <td><input oninput="filterSegments(this, exclude)" placeholder="!"></td>
+          <td><input oninput="filterSegments(this, exclude)"></td>
+          <td><input oninput="filterSegments(this, exclude)"></td>
+          <td><input oninput="filterSegments(this, exclude)"></td>
+        </tr>
+        <tr id="includeRegex">
+          <td><input oninput="filterSegments(this, includeRegex)" placeholder=".*"></td>
+          <td><input oninput="filterSegments(this, includeRegex)"></td>
+          <td><input oninput="filterSegments(this, includeRegex)"></td>
+          <td><input oninput="filterSegments(this, includeRegex)"></td>
+        </tr>
+        <tr id="excludeRegex">
+          <td><input oninput="filterSegments(this, excludeRegex)" placeholder="! .*"></td>
+          <td><input oninput="filterSegments(this, excludeRegex)"></td>
+          <td><input oninput="filterSegments(this, excludeRegex)"></td>
+          <td><input oninput="filterSegments(this, excludeRegex)"></td>
+        </tr>
+        <tr id="numberRange">
+          <td><input oninput="filterSegments(this, numberRange)" placeholder="1-2"></td>
+          <td><input oninput="filterSegments(this, numberRange)" disabled></td>
+          <td><input oninput="filterSegments(this, numberRange)" disabled></td>
+          <td><input oninput="filterSegments(this, numberRange)" disabled></td>
+        </tr>
+      </tbody>
+    </table>
+
+      <button onclick="clearFilter()"><u>C</u>lear Filter</button>
+    </div>
+
+    <table border="1" id="results">
+      <tbody>
+        <tr>
+          <th class="index">Index</th>
+          <th class="string">Source</th>
+          <th class="string">Target (File1)</th>
+          <th class="string">Target (File2)</th>
+        </tr>
+{placeholder}
+      </tbody>
+    </table>
+  </body>
+</html>

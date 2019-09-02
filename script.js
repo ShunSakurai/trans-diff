@@ -96,9 +96,9 @@ const compareContents = function(contents) {
   }
   let results = [];
   for (let i = 0; i < contents[0].length; i++) {
-    let dpTable = diffDP(contents[0][i], contents[1][i]);
+    let [dpTable, distance] = diffDP(contents[0][i], contents[1][i]);
     let [diffString1, diffString2] = diffSES(dpTable, contents[0][i], contents[1][i]);
-    results.push([i, source[i], diffString1, diffString2]);
+    results.push([i, source[i], diffString1, diffString2, distance]);
   }
   displayResults(results);
 };
@@ -131,7 +131,7 @@ const diffDP = function(string1, string2) {
       );
     }
   }
-  return dpTable;
+  return [dpTable, dpTable[length1][length2]];
 };
 
 const diffSES = function(dpTable, string1, string2) {
@@ -197,5 +197,32 @@ const diffSES = function(dpTable, string1, string2) {
 };
 
 const displayResults = function(results) {
-  console.log(results);
+  let resultTable = '';
+  for (let i = 0; i < results.length; i ++) {
+    let editDistance = results[i].pop();
+    resultTable += `<tr class="${editDistance? 'different': 'same'}"><td>${results[i].join('</td><td>')}</td></tr>\n`;
+  }
+  var request = new XMLHttpRequest();
+  request.open('GET', 'Trans_Diff_Template.html', true);
+  request.responseType = 'blob';
+  request.onload = function(e) {
+      var reader = new FileReader();
+      reader.onload =  function(e) {
+        let resultBlob = new Blob([reader.result.replace('{placeholder}', resultTable)], {type: 'text/html'});
+        let resultURL = window.URL.createObjectURL(resultBlob);
+        // reference:
+        // https://stackoverflow.com/questions/13405129/javascript-create-and-save-file
+        let a = document.createElement('a');
+        a.href = resultURL;
+        a.download = `Trans_Diff_${results[0][1]}.html`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(resultURL);  
+        }, 0); 
+      };
+      reader.readAsText(request.response);
+  };
+  request.send();
 };

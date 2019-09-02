@@ -2,7 +2,7 @@
 Create a diff table from different versions of xliff files
 
 ### Roadmap
-- [ ] Support single file
+- [x] Support single file
 - [ ] Save comments
 - [ ] Support multiple files (detect file IDs)
 - [ ] Unzip .mqxlz files
