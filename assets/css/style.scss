@@ -3,26 +3,22 @@
 
 @import "{{ site.theme }}";
 
-.browse {
-  font-size: 15px;
-}
-
 .button {
   background-color: #155799;
   color: rgba(255, 255, 255, 0.9);
   font-weight: bold;
   height: 50px;
   margin: auto;
-  opacity: 0.7;
+  opacity: 0.3;
   position: relative;
   text-align: center;
   top: 250px;
+  white-space: nowrap;
   width: 250px;
 }
 
 .center {
   position: relative;
-  text-align: center;
 }
 
 .content {
@@ -35,6 +31,7 @@
   border-style: dashed;
   height: 90%;
   position: relative;
+  text-align: center;
 }
 
 .file {
@@ -51,10 +48,10 @@
 }
 
 .message {
-  color: violet;
+  color: #9F0000;
   position: relative;
-  text-align: center;
-  top: 275px;
+  top: 270px;
+  white-space: nowrap;
 }
 
 .top25 {

@@ -1,5 +1,5 @@
 # trans-diff
-Create a diff table from different versions of xliff files
+Create a filterable diff table from xliff files
 
 ### Roadmap
 - [x] Support single file

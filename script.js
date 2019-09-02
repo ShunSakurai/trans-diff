@@ -1,3 +1,10 @@
+// Created the favicon on https://favicon.io/favicon-generator/
+let faviconLink = document.createElement('link');
+faviconLink.href = 'images/favicon.ico';
+faviconLink.rel = 'icon';
+faviconLink.type = 'image/x-icon';
+document.head.appendChild(faviconLink);
+
 const drag1 = document.getElementById('drag1');
 const drag2 = document.getElementById('drag2');
 const filename1 = document.getElementById('filename1');
@@ -17,16 +24,19 @@ drag1.addEventListener('dragover', function(e){
 drag2.addEventListener('dragover', function(e){
   e.preventDefault();
 });
+
 drag1.addEventListener('drop', function(e){
   e.preventDefault();
   files1 = e.dataTransfer.files;
   filename1.textContent = files1[0].name;
+  toggleCompareButton();
 });
 
 drag2.addEventListener('drop', function(e){
   e.preventDefault();
   files2 = e.dataTransfer.files;
   filename2.textContent = files2[0].name;
+  toggleCompareButton();
 });
 
 drag1.addEventListener('click', function(e){
@@ -40,14 +50,25 @@ drag2.addEventListener('click', function(e){
 fileinput1.addEventListener('change', function(e){
   files1 = e.target.files;
   filename1.textContent = files1[0].name;
+  toggleCompareButton();
 });
 
 fileinput2.addEventListener('change', function(e){
   files2 = e.target.files;
   filename2.textContent = files2[0].name;
+  toggleCompareButton();
 });
 
+const toggleCompareButton = function() {
+  if (files1 && files2) {
+    compare.style.opacity = 0.7;
+  } else {
+    compare.style.opacity = 0.3;
+  }
+};
+
 compare.addEventListener('click', function(e){
+  if (!(files1 && files2)) return;
   if (hasError()) return;
   const reader1 = new FileReader();
   const reader2 = new FileReader();
@@ -78,7 +99,7 @@ const hasError = function() {
 };
 
 const displayError = function() {
-  message.textContent = 'Error';
+  message.textContent = 'Error with files';
   setTimeout(function(){
     message.textContent = '';
   }, 5000);

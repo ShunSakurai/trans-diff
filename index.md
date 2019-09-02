@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div class="button" id="compare" onclick="">
+  <div class="button" id="compare">
     <p class="center top25">Compare</p>
   </div>
   <div class="message" id="message"></div>
