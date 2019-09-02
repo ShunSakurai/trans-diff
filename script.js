@@ -91,7 +91,8 @@ const hasError = function() {
     (!files1 || !files2) ||
     (files1.length >= 2 || files2.length >= 2) ||
     (files1.length != files2.length) ||
-    (!files1[0].name.endsWith('.xlf') || !files2[0].name.endsWith('.xlf'))
+    (!files1[0].name.endsWith('.xlf') && !files1[0].name.endsWith('.mqxliff')) ||
+    (!files2[0].name.endsWith('.xlf') && !files2[0].name.endsWith('.mqxliff'))
   ) {
     displayError();
     return true;
@@ -129,6 +130,7 @@ const parseXliff = function(content, language) {
   parsedContent.push(/<file [^>]*?original="([^"]+?)"/.exec(content)[1]);
   let match;
   const regex = new RegExp(`<${language}[^>]*?>([^<]*?)</${language}>`, 'g');
+  content = content.replace(/<mq:historical-unit.+?<\/mq:historical-unit>/gs, '');
   while (match = regex.exec(content)) {
     parsedContent.push(match[1]);
   }
