@@ -140,11 +140,15 @@ const compareContents = function(contents) {
 const parseXliff = function(content, language) {
   let parsedContent = [];
   parsedContent.push(/<file [^>]*?original="([^"]+?)"/.exec(content)[1]);
+  const trimmedContent = content.replace(/<mq:historical-unit.+?<\/mq:historical-unit>/gs, '');
+  const regexTransUnit = new RegExp('<trans-unit id="(\\d+)(?:\\[\\d\\])?"[^>]*?>(.+?)</trans-unit>', 'gs');
+  const regex = new RegExp(`<${language}[^>]*?>(.*?)</${language}>`, 's');
   let match;
-  const regex = new RegExp(`<${language}[^>]*?>(.*?)</${language}>`, 'gs');
-  content = content.replace(/<mq:historical-unit.+?<\/mq:historical-unit>/gs, '');
-  while (match = regex.exec(content)) {
-    parsedContent.push(match[1]);
+  let transId = 0;
+  while (match = regexTransUnit.exec(trimmedContent)) {
+    transId = match[1];
+    let segmentMatch = regex.exec(match[2]);
+    parsedContent[transId] = segmentMatch? segmentMatch[1]: '';
   }
   return parsedContent;
 };
@@ -152,6 +156,8 @@ const parseXliff = function(content, language) {
 const diffDP = function(string1, string2) {
   // reference:
   // https://qiita.com/3000manJPY/items/c28ed74d2d06971c34ef
+  if (string1 == null) string1 = '';
+  if (string2 == null) string2 = '';
   const length1 = string1.length;
   const length2 = string2.length;
   const dpTable = new Array(length1 + 1).fill(0).map(row => new Array(length2 + 1).fill(0));
