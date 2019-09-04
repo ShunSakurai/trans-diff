@@ -1,4 +1,5 @@
 <div class="content">
+
   <div class="file file1">
     <h1>File 1</h1>
     <div class="drag" id="drag1">
@@ -19,5 +20,7 @@
     <p class="center top25">Compare</p>
   </div>
   <div class="message" id="message"></div>
+
 </div>
+
 <script src="script.js" type="text/javascript" charset="utf-8" async defer></script>

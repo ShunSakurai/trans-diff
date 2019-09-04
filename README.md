@@ -3,17 +3,18 @@ Create a filterable diff table from xliff files
 
 ### Roadmap
 - [x] Support single file
-- [ ] Save comments
 - [ ] Support multiple files (detect file IDs)
+- [ ] Save comments
 - [ ] Unzip .mqxlz files
 
 ### Supported files
-- .xlf ([XLIFF version 1.2](http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html))
-- .mqxliff
+- .xlf ([XLIFF version 1.2](http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html) - intended for [XLIFF files downloaded from Transifex](https://docs.transifex.com/projects/downloading-translations#section-downloading-translations-for-a-specific-language)])
+- .mqxliff (.mqxlz not supported at the moment)
 
 ### Motivation and inspiration
 
-Originally I wanted to compare .mqxlz files but the project has been dormant because it was tricky to implement codes to unzip files. I recently often work with Transifex xliff files so I resumed this project.
+Originally I wanted to compare .mqxlz files but the project has been dormant because it was tricky to implement the code to unzip files. It seems .mqxlz is ZIP64 format.
+I recently often work with Transifex xliff files so I resumed this project.
 I was highly inspired and motivated by the diff tool by [AlissaSabre](https://github.com/AlissaSabre), not on GitHub though.
 
 ### Privacy policy and terms of use

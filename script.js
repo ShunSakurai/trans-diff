@@ -67,9 +67,21 @@ const toggleCompareButton = function() {
   }
 };
 
+compare.addEventListener('mousedown', function(e){
+  if (!(files1 && files2)) return;
+  compare.style.backgroundColor = '#008000';
+});
+
+for (let e of ['mouseleave', 'mouseup']) {
+  compare.addEventListener(e, function(e){
+    compare.style.backgroundColor = '';
+  });
+}
+
 compare.addEventListener('click', function(e){
   if (!(files1 && files2)) return;
   if (hasError()) return;
+
   const reader1 = new FileReader();
   const reader2 = new FileReader();
   reader1.onload = function(e){
@@ -129,7 +141,7 @@ const parseXliff = function(content, language) {
   let parsedContent = [];
   parsedContent.push(/<file [^>]*?original="([^"]+?)"/.exec(content)[1]);
   let match;
-  const regex = new RegExp(`<${language}[^>]*?>([^<]*?)</${language}>`, 'g');
+  const regex = new RegExp(`<${language}[^>]*?>(.*?)</${language}>`, 'gs');
   content = content.replace(/<mq:historical-unit.+?<\/mq:historical-unit>/gs, '');
   while (match = regex.exec(content)) {
     parsedContent.push(match[1]);
