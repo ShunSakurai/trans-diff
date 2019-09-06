@@ -9,10 +9,10 @@
   font-weight: bold;
   height: 50px;
   margin: auto;
-  opacity: 0.3;
+  opacity: 0.4;
   position: relative;
   text-align: center;
-  top: 250px;
+  top: 230px;
   white-space: nowrap;
   width: 250px;
 }
@@ -22,7 +22,16 @@
 }
 
 .content {
-  margin-bottom: 35vh;
+  margin-bottom: 30vh;
+}
+
+.converter {
+  border-top: solid 1px $hr-border-color;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  position: relative;
+  top: 240px;
+  white-space: nowrap;
 }
 
 .drag {
@@ -51,8 +60,28 @@
   color: #9F0000;
   height: 15px;
   position: relative;
-  top: 270px;
+  top: 235px;
   white-space: nowrap;
+}
+
+.page-header {
+  padding: 2rem 4rem;
+}
+
+.terminal {
+  background: #222;
+  border: none;
+  color: white;
+  display: block;
+  font-size: medium;
+  height: 100px;
+  resize: none;
+  width: 100%;
+}
+
+.terminal:active,
+.terminal:focus {
+  outline: 0;
 }
 
 .top25 {

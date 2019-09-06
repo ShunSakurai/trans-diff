@@ -1,3 +1,5 @@
+(function() {
+
 // Created the favicon on https://favicon.io/favicon-generator/
 let faviconLink = document.createElement('link');
 faviconLink.href = 'images/favicon.ico';
@@ -61,9 +63,9 @@ fileinput2.addEventListener('change', function(e){
 
 const toggleCompareButton = function() {
   if (files1 && files2) {
-    compare.style.opacity = 0.7;
+    compare.style.opacity = 0.9;
   } else {
-    compare.style.opacity = 0.3;
+    compare.style.opacity = 0.4;
   }
 };
 
@@ -267,3 +269,5 @@ const displayResults = function(results) {
   };
   request.send();
 };
+
+})();
