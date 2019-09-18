@@ -8,6 +8,7 @@
       del { color: #9F0000; }
       input { width: 100%; }
       ins { color: green; }
+      small { font-size: 75%; }
       table { border-collapse: collapse; table-layout: fixed; white-space: pre-wrap; width: 100%; }
       td { word-wrap: break-word; }
       .different { background: #dff; }
@@ -127,7 +128,7 @@
     var td = element.parentNode;
     var column = Array.prototype.indexOf.call(td.parentNode.children, td);
     var filterId = func.name + 'Filter' + column;
-    var allTr = document.querySelectorAll('#results tr');
+    var allTr = document.querySelectorAll('.results tr');
 
     if (!element.value) {
       delete document.displayNone[filterId];
@@ -166,13 +167,13 @@
         }
       }
     });
-    var allTr = document.querySelectorAll('#results tr');
+    var allTr = document.querySelectorAll('.results tr');
     toggleSegmentVisibility(allTr);
   };
 
   var toggleUnchanged = function() {
     document.switchedOn.unchanged = !document.switchedOn.unchanged;
-    var allTr = document.querySelectorAll('#results tr');
+    var allTr = document.querySelectorAll('.results tr');
     if (document.switchedOn.unchanged){
       document.displayNone.unchanged = [];
       for (var i = 0, n = allTr.length; i < n; i ++) {
@@ -188,6 +189,17 @@
       document.getElementById('buttonUnchanged').innerHTML ='Hide <u>U</u>nchanged Segments';
     }
     toggleSegmentVisibility(allTr);
+  };
+
+  var toggleTbody = function(h2) {
+    var tbody = h2.nextSibling.nextSibling;
+    if (h2.textContent[0] === '▼') {
+      h2.innerHTML = '<small>▷</small>' + h2.textContent.slice(1);
+      tbody.style.display = 'None';
+    } else {
+      h2.innerHTML = '<small>▼</small>' + h2.textContent.slice(1);
+      tbody.style.display = '';
+    }
   };
 
   </script>
@@ -234,7 +246,9 @@
       <button onclick="clearFilter()" style="font-size: 14px;"><u>C</u>lear Filter</button>
     </div>
 
-    <table border="1" id="results">
+<!-- Template Start -->
+    <h2 onclick="toggleTbody(this)"><small>▼</small>{ph1}</h2>
+    <table border="1" class="results">
       <tbody>
         <tr>
           <th class="index">Index</th>
@@ -242,8 +256,9 @@
           <th class="string">Target (File1)</th>
           <th class="string">Target (File2)</th>
         </tr>
-{placeholder}
+{ph2}
       </tbody>
     </table>
+<!-- Template End -->
   </body>
 </html>

@@ -5,7 +5,7 @@ Create a filterable diff table from xliff files
 ### Roadmap
 
 - [x] Support single file
-- [ ] Support multiple files (detect file IDs)
+- [x] Support multiple files (detect file IDs)
 - [ ] Save comments
 - [ ] Unzip .mqxlz files
 

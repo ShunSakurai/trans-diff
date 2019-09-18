@@ -30,14 +30,16 @@ drag2.addEventListener('dragover', function(e){
 drag1.addEventListener('drop', function(e){
   e.preventDefault();
   files1 = e.dataTransfer.files;
-  filename1.textContent = files1[0].name;
+  filename1.classList.remove('top40');
+  filename1.innerHTML = Array.from(files1).map(file => file.name).join('<br>');
   toggleCompareButton();
 });
 
 drag2.addEventListener('drop', function(e){
   e.preventDefault();
   files2 = e.dataTransfer.files;
-  filename2.textContent = files2[0].name;
+  filename2.classList.remove('top40');
+  filename2.innerHTML = Array.from(files2).map(file => file.name).join('<br>');
   toggleCompareButton();
 });
 
@@ -51,13 +53,15 @@ drag2.addEventListener('click', function(e){
 
 fileinput1.addEventListener('change', function(e){
   files1 = e.target.files;
-  filename1.textContent = files1[0].name;
+  filename1.classList.remove('top40');
+  filename1.innerHTML = Array.from(files1).map(file => file.name).join('<br>');
   toggleCompareButton();
 });
 
 fileinput2.addEventListener('change', function(e){
   files2 = e.target.files;
-  filename2.textContent = files2[0].name;
+  filename2.classList.remove('top40');
+  filename2.innerHTML = Array.from(files2).map(file => file.name).join('<br>');
   toggleCompareButton();
 });
 
@@ -81,29 +85,34 @@ for (let e of ['mouseleave', 'mouseup']) {
 }
 
 compare.addEventListener('click', function(e){
-  if (!(files1 && files2)) return;
   if (hasError()) return;
+  let readers1 = [];
+  let readers2 = [];
+  for (let i = 0; i < files1.length; i++) {
 
-  const reader1 = new FileReader();
-  const reader2 = new FileReader();
-  reader1.onload = function(e){
-    if (reader2.readyState == 2) {
-      compareContents([reader1.result, reader2.result]);
-    }
-  };
-  reader2.onload = function(e){
-    if (reader1.readyState == 2) {
-      compareContents([reader1.result, reader2.result]);
-    }
-  };
-  reader1.readAsText(files1[0]);
-  reader2.readAsText(files2[0]);
+    const reader1 = new FileReader();
+    readers1.push(reader1);
+    reader1.onload = function(e){
+      if ([...readers1, ...readers2].every(reader => reader.readyState == 2)) {
+        compareContents(readers1, readers2);
+      }
+    };
+    reader1.readAsText(files1[i]);
+
+    const reader2 = new FileReader();
+    readers2.push(reader2);
+    reader2.onload = function(e){
+      if ([...readers1, ...readers2].every(reader => reader.readyState == 2)) {
+        compareContents(readers1, readers2);
+      }
+    };
+    reader2.readAsText(files2[i]);
+  }
 });
 
 const hasError = function() {
   if (
     (!files1 || !files2) ||
-    (files1.length >= 2 || files2.length >= 2) ||
     (files1.length != files2.length) ||
     (!files1[0].name.endsWith('.xlf') && !files1[0].name.endsWith('.mqxliff')) ||
     (!files2[0].name.endsWith('.xlf') && !files2[0].name.endsWith('.mqxliff'))
@@ -120,28 +129,36 @@ const displayError = function() {
   }, 5000);
 };
 
-const compareContents = function(contents) {
-  const source = parseXliff(contents[0], 'source');
-  contents = contents.map(content => parseXliff(content, 'target'));
-  if (
-    (contents[0].length != contents[1].length) ||
-    (contents[0][0] != contents[1][0])
-  ) {
-    displayError();
-    return;
+const compareContents = function(readers1, readers2) {
+  let contents1 = {};
+  let contents2 = {};
+  let results = {};
+  for (let reader2 of readers2) {
+    const [original, target] = parseXliff(reader2.result, 'target');
+    contents2[original] = {'target': target};
   }
-  let results = [];
-  for (let i = 0; i < contents[0].length; i++) {
-    let [dpTable, distance] = diffDP(contents[0][i], contents[1][i]);
-    let [diffString1, diffString2] = diffSES(dpTable, contents[0][i], contents[1][i]);
-    results.push([i, source[i], diffString1, diffString2, distance]);
+  for (let reader1 of readers1) {
+    const [original, source] = parseXliff(reader1.result, 'source');
+    contents1[original] = {'source': source, 'target': parseXliff(reader1.result, 'target')[1]};
+
+    if (
+      contents2.hasOwnProperty(original) &&
+      contents1[original].target.length == contents2[original].target.length
+    ) {
+      results[original] = [];
+      for (let i = 1; i < contents1[original].target.length; i++) {
+        let [dpTable, distance] = diffDP(contents1[original].target[i], contents2[original].target[i]);
+        let [diffString1, diffString2] = diffSES(dpTable, contents1[original].target[i], contents2[original].target[i]);
+        results[original].push([i, source[i], diffString1, diffString2, distance]);
+      }
+    }
   }
   displayResults(results);
 };
 
 const parseXliff = function(content, language) {
+  const original = /<file [^>]*?original="([^"]+?)"/.exec(content)[1];
   let parsedContent = [];
-  parsedContent.push(/<file [^>]*?original="([^"]+?)"/.exec(content)[1]);
   const trimmedContent = content.replace(/<mq:historical-unit.+?<\/mq:historical-unit>/gs, '');
   const regexTransUnit = new RegExp('<trans-unit id="(\\d+)(?:\\[\\d\\])?"[^>]*?>(.+?)</trans-unit>', 'gs');
   const regex = new RegExp(`<${language}[^>]*?>(.*?)</${language}>`, 's');
@@ -152,7 +169,7 @@ const parseXliff = function(content, language) {
     let segmentMatch = regex.exec(match[2]);
     parsedContent[transId] = segmentMatch? segmentMatch[1]: '';
   }
-  return parsedContent;
+  return [original, parsedContent];
 };
 
 const diffDP = function(string1, string2) {
@@ -240,10 +257,14 @@ const diffSES = function(dpTable, string1, string2) {
 };
 
 const displayResults = function(results) {
-  let resultTable = '';
-  for (let i = 0; i < results.length; i ++) {
-    let editDistance = results[i].pop();
-    resultTable += `<tr class="${editDistance? 'different': 'same'}"><td>${results[i].join('</td><td>')}</td></tr>\n`;
+  let resultTables = {};
+  for (let original of Object.keys(results)) {
+    let resultTable = '';
+    for (let i = 0; i < results[original].length; i ++) {
+      let editDistance = results[original][i].pop();
+      resultTable += `<tr class="${editDistance? 'different': 'same'}"><td>${results[original][i].join('</td><td>')}</td></tr>\n`;
+    }
+    resultTables[original] = resultTable;
   }
   var request = new XMLHttpRequest();
   request.open('GET', 'Trans_Diff_Template.html', true);
@@ -251,13 +272,19 @@ const displayResults = function(results) {
   request.onload = function(e) {
       var reader = new FileReader();
       reader.onload =  function(e) {
-        let resultBlob = new Blob([reader.result.replace('{placeholder}', resultTable)], {type: 'text/html'});
+        const templateMatch = /<!-- Template Start -->(.+?)<!-- Template End -->/s.exec(reader.result);
+        let resultBlob = new Blob([
+          reader.result.replace(
+            templateMatch[0],
+            Object.keys(resultTables).map(original => templateMatch[1].replace('{ph1}', original).replace('{ph2}', resultTables[original])).join('\n')
+          )
+        ], {type: 'text/html'});
         let resultURL = window.URL.createObjectURL(resultBlob);
         // reference:
         // https://stackoverflow.com/questions/13405129/javascript-create-and-save-file
         let a = document.createElement('a');
         a.href = resultURL;
-        a.download = `Trans_Diff_${results[0][1]}.html`;
+        a.download = `Trans_Diff_${Object.keys(results)[0]}.html`;
         document.body.appendChild(a);
         a.click();
         setTimeout(function() {

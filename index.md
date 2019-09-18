@@ -3,16 +3,16 @@
   <div class="file file1">
     <h1>File 1</h1>
     <div class="drag" id="drag1">
-      <p class="center top40" id="filename1">Drag file here or click to browse</p>
-      <input id="fileinput1" name="fileinput1" style="display: none;" type="file">
+      <p class="center top40" id="filename1">Drag file(s) here or click to browse</p>
+      <input id="fileinput1" name="fileinput1" style="display: none;" type="file" multiple>
     </div>
   </div>
 
   <div class="file file2">
     <h1>File 2</h1>
     <div class="drag" id="drag2">
-      <p class="center top40" id="filename2">Drag file here or click to browse</p>
-      <input id="fileinput2" name="fileinput2" style="display: none;" type="file">
+      <p class="center top40" id="filename2">Drag file(s) here or click to browse</p>
+      <input id="fileinput2" name="fileinput2" style="display: none;" type="file" multiple>
     </div>
   </div>
 
