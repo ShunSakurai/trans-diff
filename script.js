@@ -30,14 +30,16 @@ drag2.addEventListener('dragover', function(e){
 drag1.addEventListener('drop', function(e){
   e.preventDefault();
   files1 = e.dataTransfer.files;
-  filename1.textContent = files1[0].name;
+  filename1.classList.remove('top40');
+  filename1.innerHTML = Array.from(files1).map(file => file.name).join('<br>');
   toggleCompareButton();
 });
 
 drag2.addEventListener('drop', function(e){
   e.preventDefault();
   files2 = e.dataTransfer.files;
-  filename2.textContent = files2[0].name;
+  filename2.classList.remove('top40');
+  filename2.innerHTML = Array.from(files2).map(file => file.name).join('<br>');
   toggleCompareButton();
 });
 
@@ -81,7 +83,6 @@ for (let e of ['mouseleave', 'mouseup']) {
 }
 
 compare.addEventListener('click', function(e){
-  if (!(files1 && files2)) return;
   if (hasError()) return;
 
   const reader1 = new FileReader();
@@ -103,7 +104,6 @@ compare.addEventListener('click', function(e){
 const hasError = function() {
   if (
     (!files1 || !files2) ||
-    (files1.length >= 2 || files2.length >= 2) ||
     (files1.length != files2.length) ||
     (!files1[0].name.endsWith('.xlf') && !files1[0].name.endsWith('.mqxliff')) ||
     (!files2[0].name.endsWith('.xlf') && !files2[0].name.endsWith('.mqxliff'))
@@ -121,27 +121,24 @@ const displayError = function() {
 };
 
 const compareContents = function(contents) {
-  const source = parseXliff(contents[0], 'source');
-  contents = contents.map(content => parseXliff(content, 'target'));
-  if (
-    (contents[0].length != contents[1].length) ||
-    (contents[0][0] != contents[1][0])
-  ) {
+  const [original, source] = parseXliff(contents[0], 'source');
+  contents = contents.map(content => parseXliff(content, 'target')[1]);
+  if (contents[0].length != contents[1].length) {
     displayError();
     return;
   }
   let results = [];
-  for (let i = 0; i < contents[0].length; i++) {
+  for (let i = 1; i < contents[0].length; i++) {
     let [dpTable, distance] = diffDP(contents[0][i], contents[1][i]);
     let [diffString1, diffString2] = diffSES(dpTable, contents[0][i], contents[1][i]);
     results.push([i, source[i], diffString1, diffString2, distance]);
   }
-  displayResults(results);
+  displayResults(original, results);
 };
 
 const parseXliff = function(content, language) {
+  const original = /<file [^>]*?original="([^"]+?)"/.exec(content)[1];
   let parsedContent = [];
-  parsedContent.push(/<file [^>]*?original="([^"]+?)"/.exec(content)[1]);
   const trimmedContent = content.replace(/<mq:historical-unit.+?<\/mq:historical-unit>/gs, '');
   const regexTransUnit = new RegExp('<trans-unit id="(\\d+)(?:\\[\\d\\])?"[^>]*?>(.+?)</trans-unit>', 'gs');
   const regex = new RegExp(`<${language}[^>]*?>(.*?)</${language}>`, 's');
@@ -152,7 +149,7 @@ const parseXliff = function(content, language) {
     let segmentMatch = regex.exec(match[2]);
     parsedContent[transId] = segmentMatch? segmentMatch[1]: '';
   }
-  return parsedContent;
+  return [original, parsedContent];
 };
 
 const diffDP = function(string1, string2) {
@@ -239,7 +236,7 @@ const diffSES = function(dpTable, string1, string2) {
   return diffStrings;
 };
 
-const displayResults = function(results) {
+const displayResults = function(original, results) {
   let resultTable = '';
   for (let i = 0; i < results.length; i ++) {
     let editDistance = results[i].pop();
@@ -251,7 +248,8 @@ const displayResults = function(results) {
   request.onload = function(e) {
       var reader = new FileReader();
       reader.onload =  function(e) {
-        let resultBlob = new Blob([reader.result.replace('{placeholder}', resultTable)], {type: 'text/html'});
+        const templateMatch = /<!-- Template Start -->(.+?)<!-- Template End -->/s.exec(reader.result);
+        let resultBlob = new Blob([reader.result.replace(templateMatch[0], templateMatch[1].replace('{ph1}', original).replace('{ph2}', resultTable))], {type: 'text/html'});
         let resultURL = window.URL.createObjectURL(resultBlob);
         // reference:
         // https://stackoverflow.com/questions/13405129/javascript-create-and-save-file
