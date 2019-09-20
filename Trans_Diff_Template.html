@@ -13,7 +13,8 @@
       td { word-wrap: break-word; }
       .different { background: #dff; }
       .index { width: 5%; }
-      .string { width: 31%; }
+      .percent { width: 4%; }
+      .string { width: 30%; }
     </style>
 
   <script type="text/javascript">
@@ -215,9 +216,11 @@
           <td class="string"><input oninput="filterSegments(this, include)"></td>
           <td class="string"><input oninput="filterSegments(this, include)"></td>
           <td class="string"><input oninput="filterSegments(this, include)"></td>
+          <td class="percent"><input oninput="filterSegments(this, include)"></td>
         </tr>
         <tr id="exclude">
           <td><input oninput="filterSegments(this, exclude)" placeholder="!"></td>
+          <td><input oninput="filterSegments(this, exclude)"></td>
           <td><input oninput="filterSegments(this, exclude)"></td>
           <td><input oninput="filterSegments(this, exclude)"></td>
           <td><input oninput="filterSegments(this, exclude)"></td>
@@ -227,9 +230,11 @@
           <td><input oninput="filterSegments(this, includeRegex)"></td>
           <td><input oninput="filterSegments(this, includeRegex)"></td>
           <td><input oninput="filterSegments(this, includeRegex)"></td>
+          <td><input oninput="filterSegments(this, includeRegex)"></td>
         </tr>
         <tr id="excludeRegex">
           <td><input oninput="filterSegments(this, excludeRegex)" placeholder="! .*"></td>
+          <td><input oninput="filterSegments(this, excludeRegex)"></td>
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
@@ -239,6 +244,7 @@
           <td><input oninput="filterSegments(this, numberRange)" disabled></td>
           <td><input oninput="filterSegments(this, numberRange)" disabled></td>
           <td><input oninput="filterSegments(this, numberRange)" disabled></td>
+          <td><input oninput="filterSegments(this, numberRange)"></td>
         </tr>
       </tbody>
     </table>
@@ -255,6 +261,7 @@
           <th class="string">Source</th>
           <th class="string">Target (File1)</th>
           <th class="string">Target (File2)</th>
+          <th class="percent">%</th>
         </tr>
 {ph2}
       </tbody>

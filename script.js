@@ -138,7 +138,7 @@ const compareContents = function(readers1, readers2) {
     contents2[original] = {'target': target};
   }
   for (let reader1 of readers1) {
-    const [original, source] = parseXliff(reader1.result, 'source');
+    const [original, source, percent] = parseXliff(reader1.result, 'source');
     contents1[original] = {'source': source, 'target': parseXliff(reader1.result, 'target')[1]};
 
     if (
@@ -149,7 +149,7 @@ const compareContents = function(readers1, readers2) {
       for (let i = 1; i < contents1[original].target.length; i++) {
         let [dpTable, distance] = diffDP(contents1[original].target[i], contents2[original].target[i]);
         let [diffString1, diffString2] = diffSES(dpTable, contents1[original].target[i], contents2[original].target[i]);
-        results[original].push([i, source[i], diffString1, diffString2, distance]);
+        results[original].push([i, source[i], diffString1, diffString2, percent[i], distance]);
       }
     }
   }
@@ -159,17 +159,21 @@ const compareContents = function(readers1, readers2) {
 const parseXliff = function(content, language) {
   const original = /<file [^>]*?original="([^"]+?)"/.exec(content)[1];
   let parsedContent = [];
+  let parsedPercent = [];
   const trimmedContent = content.replace(/<mq:historical-unit.+?<\/mq:historical-unit>/gs, '');
-  const regexTransUnit = new RegExp('<trans-unit id="(\\d+)(?:\\[\\d\\])?"[^>]*?>(.+?)</trans-unit>', 'gs');
+  const regexTransUnit = new RegExp('<trans-unit id="(\\d+)(?:\\[\\d\\])?"([^>]*?)>(.+?)</trans-unit>', 'gs');
+  const regexMQPercent = /mq:percent="(\d+)"/;
   const regex = new RegExp(`<${language}[^>]*?>(.*?)</${language}>`, 's');
-  let match;
+  let match, matchMQPercent;
   let transId = 0;
   while (match = regexTransUnit.exec(trimmedContent)) {
     transId = match[1];
-    let segmentMatch = regex.exec(match[2]);
+    matchMQPercent = regexMQPercent.exec(match[2]);
+    let segmentMatch = regex.exec(match[3]);
     parsedContent[transId] = segmentMatch? segmentMatch[1]: '';
+    parsedPercent[transId] = matchMQPercent? matchMQPercent[1]: 0;
   }
-  return [original, parsedContent];
+  return [original, parsedContent, parsedPercent];
 };
 
 const diffDP = function(string1, string2) {
@@ -289,8 +293,8 @@ const displayResults = function(results) {
         a.click();
         setTimeout(function() {
           document.body.removeChild(a);
-          window.URL.revokeObjectURL(resultURL);  
-        }, 0); 
+          window.URL.revokeObjectURL(resultURL);
+        }, 0);
       };
       reader.readAsText(request.response);
   };
