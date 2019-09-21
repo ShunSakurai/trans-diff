@@ -4,7 +4,7 @@
     <title>Trans Diff results</title>
     <style type="text/css">
       button { margin-bottom: 10px; margin-top: 5px; }
-      button, th { background: #155799;  color: #fff; opacity: 0.7; }
+      button, th { background: #155799;  color: #fff; margin-right: 5px; opacity: 0.7; }
       del { color: #9F0000; }
       input { width: 100%; }
       ins { color: green; }
@@ -15,10 +15,11 @@
       .index { width: 5%; }
       .percent { width: 4%; }
       .string { width: 30%; }
+      .tag { opacity: 0.5; }
     </style>
 
   <script type="text/javascript">
-  document.switchedOn = {'unchanged': false};
+  document.switchedOn = {'unchanged': false, 'expanded': false};
   document.styleIndices = {};
   document.displayNone = {};
 
@@ -30,6 +31,9 @@
     switch (event.keyCode){
       case 'C'.charCodeAt(0):
         clearFilter();
+        break;
+      case 'T'.charCodeAt(0):
+        toggleTags();
         break;
       case 'U'.charCodeAt(0):
         toggleUnchanged();
@@ -172,10 +176,18 @@
     toggleSegmentVisibility(allTr);
   };
 
+  var toggleTags = function() {
+    var allTags = document.querySelectorAll('.tag');
+    for (var i = 0, n = allTags.length; i < n; i ++) {
+      [allTags[i].textContent, allTags[i].title] = [allTags[i].title, allTags[i].textContent];
+    }
+    document.switchedOn.expanded = !document.switchedOn.expanded;
+    document.getElementById('buttonTags').innerHTML = `${document.switchedOn.expanded? 'Collapse': 'Expand'} <u>T</u>ags`;
+  };
+
   var toggleUnchanged = function() {
-    document.switchedOn.unchanged = !document.switchedOn.unchanged;
     var allTr = document.querySelectorAll('.results tr');
-    if (document.switchedOn.unchanged){
+    if (!document.switchedOn.unchanged){
       document.displayNone.unchanged = [];
       for (var i = 0, n = allTr.length; i < n; i ++) {
         if (allTr[i].classList.contains('same')) {
@@ -184,12 +196,12 @@
           document.displayNone.unchanged.push(false);
         }
       }
-      document.getElementById('buttonUnchanged').innerHTML = 'Show <u>U</u>nchanged Segments';
     } else {
       delete document.displayNone.unchanged;
-      document.getElementById('buttonUnchanged').innerHTML ='Hide <u>U</u>nchanged Segments';
     }
     toggleSegmentVisibility(allTr);
+    document.switchedOn.unchanged = !document.switchedOn.unchanged;
+    document.getElementById('buttonUnchanged').innerHTML = `${document.switchedOn.unchanged? 'Show': 'Hide'} <u>U</u>nchanged Segments`;
   };
 
   var toggleTbody = function(h2) {
@@ -208,6 +220,7 @@
   <body>
     <div class="header">
       <button id="buttonUnchanged" onclick="toggleUnchanged()" style="font-size: 16px;">Hide <u>U</u>nchanged Segments</button>
+      <button id="buttonTags" onclick="toggleTags()" style="font-size: 16px;">Expand <u>T</u>ags</button>
 
     <table>
       <tbody>

@@ -147,9 +147,12 @@ const compareContents = function(readers1, readers2) {
     ) {
       results[original] = [];
       for (let i = 1; i < contents1[original].target.length; i++) {
-        let [dpTable, distance] = diffDP(contents1[original].target[i], contents2[original].target[i]);
-        let [diffString1, diffString2] = diffSES(dpTable, contents1[original].target[i], contents2[original].target[i]);
-        results[original].push([i, source[i], diffString1, diffString2, percent[i], distance]);
+        let shortSource = tagToPlaceholder(contents1[original].source[i]);
+        let stringArray1 = tagAsOneChar(contents1[original].target[i]);
+        let stringArray2 = tagAsOneChar(contents2[original].target[i]);
+        let [dpTable, distance] = diffDP(stringArray1, stringArray2);
+        let [diffString1, diffString2] = diffSES(dpTable, stringArray1, stringArray2);
+        results[original].push([i, shortSource, diffString1, diffString2, percent[i], distance]);
       }
     }
   }
@@ -176,13 +179,33 @@ const parseXliff = function(content, language) {
   return [original, parsedContent, parsedPercent];
 };
 
-const diffDP = function(string1, string2) {
+const convertXMLEntities = function(string) {
+  return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+};
+
+const tagAsOneChar = function(string) {
+  let stringArray = [];
+  let match;
+  while (match = /(<ph[^>]*?>.*?<\/ph[^>]*?>|&lt;.*?&gt;)/g.exec(string)) {
+    stringArray.push(...string.substring(0, match.index).split(''));
+    stringArray.push(`<span class="tag" title="${match[0].startsWith('<ph')? convertXMLEntities(match[0]): match[0]}">⬣</span>`);
+    string = string.substring(match.index + match[0].length);
+  }
+  stringArray.push(...string.split(''));
+  return stringArray;
+};
+
+const tagToPlaceholder = function(string) {
+  return string.replace(/(<ph[^>]*?>.*?<\/ph[^>]*?>|&lt;.*?&gt;)/g, $0 => `<span class="tag" title="${$0.startsWith('<ph')? convertXMLEntities($0): $0}">⬣</span>`);
+};
+
+const diffDP = function(stringArray1, stringArray2) {
   // reference:
   // https://qiita.com/3000manJPY/items/c28ed74d2d06971c34ef
-  if (string1 == null) string1 = '';
-  if (string2 == null) string2 = '';
-  const length1 = string1.length;
-  const length2 = string2.length;
+  const length1 = stringArray1.length;
+  const length2 = stringArray2.length;
+  if (length1 == 0) stringArray1 = [''];
+  if (length2 == 0) stringArray2 = [''];
   const dpTable = new Array(length1 + 1).fill(0).map(row => new Array(length2 + 1).fill(0));
   for (let i = 0; i <= length1; i++) dpTable[i][0] = i;
   for (let j = 0; j <= length2; j++) dpTable[0][j] = j;
@@ -191,14 +214,14 @@ const diffDP = function(string1, string2) {
       dpTable[i + 1][j + 1] = Math.min(
         dpTable[i][j + 1] + 1, // insertion
         dpTable[i + 1][j] + 1, // deletion
-        dpTable[i][j] + 1 * (string1[i] != string2[j]) // replacement
+        dpTable[i][j] + 1 * (stringArray1[i] != stringArray2[j]) // replacement
       );
     }
   }
   return [dpTable, dpTable[length1][length2]];
 };
 
-const diffSES = function(dpTable, string1, string2) {
+const diffSES = function(dpTable, stringArray1, stringArray2) {
   // reference:
   // https://qiita.com/yumura_s/items/43ad19fce4739201705e
   // https://gist.github.com/gurimusan/7e554eb12f9f59880053
@@ -211,26 +234,26 @@ const diffSES = function(dpTable, string1, string2) {
   let keep = 'keep';
   while (i > 0 || j > 0) {
     if (i == 0) {
-      ses2.unshift([ins, string2[j - 1]]);
+      ses2.unshift([ins, stringArray2[j - 1]]);
       j--;
     } else if (j == 0) {
-      ses1.unshift([del, string1[i - 1]]);
+      ses1.unshift([del, stringArray1[i - 1]]);
       i--;
-    } else if (string1[i - 1] == string2[j - 1]) {
-      ses1.unshift([keep, string1[i - 1]]);
-      ses2.unshift([keep, string1[i - 1]]);
+    } else if (stringArray1[i - 1] == stringArray2[j - 1]) {
+      ses1.unshift([keep, stringArray1[i - 1]]);
+      ses2.unshift([keep, stringArray1[i - 1]]);
       i--;
       j--;
     } else if (dpTable[i - 1][j - 1] <= Math.min(dpTable[i - 1][j], dpTable[i][j - 1])) {
-      ses1.unshift([del, string1[i - 1]]);
-      ses2.unshift([ins, string2[j - 1]]);
+      ses1.unshift([del, stringArray1[i - 1]]);
+      ses2.unshift([ins, stringArray2[j - 1]]);
       i--;
       j--;
     } else if (dpTable[i][j - 1] <= dpTable[i - 1][j]) {
-      ses2.unshift([ins, string2[j - 1]]);
+      ses2.unshift([ins, stringArray2[j - 1]]);
       j--;
     } else {
-      ses1.unshift([del, string1[i - 1]]);
+      ses1.unshift([del, stringArray1[i - 1]]);
       i--;
     }
   }
