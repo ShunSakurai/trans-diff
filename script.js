@@ -163,10 +163,10 @@ const parseXliff = function(content, language) {
   const original = /<file [^>]*?original="([^"]+?)"/.exec(content)[1];
   let parsedContent = [];
   let parsedPercent = [];
-  const trimmedContent = content.replace(/<mq:historical-unit.+?<\/mq:historical-unit>/gs, '');
-  const regexTransUnit = new RegExp('<trans-unit id="(\\d+)(?:\\[\\d\\])?"([^>]*?)>(.+?)</trans-unit>', 'gs');
+  const trimmedContent = content.replace(/<mq:historical-unit[^]+?<\/mq:historical-unit>/g, '');
+  const regexTransUnit = new RegExp('<trans-unit id="(\\d+)(?:\\[\\d\\])?"([^>]*?)>([^]+?)</trans-unit>', 'g');
   const regexMQPercent = /mq:percent="(\d+)"/;
-  const regex = new RegExp(`<${language}[^>]*?>(.*?)</${language}>`, 's');
+  const regex = new RegExp(`<${language}[^>]*?>([^]*?)</${language}>`);
   let match, matchMQPercent;
   let transId = 0;
   while (match = regexTransUnit.exec(trimmedContent)) {
@@ -299,7 +299,7 @@ const displayResults = function(results) {
   request.onload = function(e) {
       var reader = new FileReader();
       reader.onload =  function(e) {
-        const templateMatch = /<!-- Template Start -->(.+?)<!-- Template End -->/s.exec(reader.result);
+        const templateMatch = /<!-- Template Start -->([^]+?)<!-- Template End -->/.exec(reader.result);
         let resultBlob = new Blob([
           reader.result.replace(
             templateMatch[0],
