@@ -22,7 +22,7 @@ Features:
 
 - Filter segments so that only changed segments are visible or all segments are visible
 - Filter segments with text or number range, regular expression is supported
-- Click in the Note column to add comments, please remember to resave the file after commenting (Ctrl/Cmd+S or clicking the Resave button)
+- Click in the Note column to add comments, click outside or press Tab to finish adding - please remember to resave the file after commenting (press Ctrl/Cmd+S or click the Resave button)
 
 ### Downloading XLIFF files
 

@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
   <head>
-    <title>Trans Diff results</title>
+    <title>{ph0}</title>
     <meta charset="UTF-8">
     <style type="text/css">
       button { margin-bottom: 10px; margin-top: 5px; }
@@ -15,7 +15,7 @@
       textarea { margin: 0; width: 100%; }
       .different { background: #dff; }
       .fileName { display: inline-block; }
-      .index { width: 3%; }
+      .id { width: 3%; }
       .note { width: 12%; }
       .percent { width: 3%; }
       .string { width: 27%; }
@@ -136,7 +136,7 @@
 
   var filterSegments = function(element, func) {
     var td = element.parentNode;
-    var column = Array.prototype.indexOf.call(td.parentNode.children, td);
+    var column = Array.from(td.parentNode.children).indexOf(td);
     var filterId = func.name + 'Filter' + column;
     var allTr = document.querySelectorAll('.results tr');
 
@@ -230,7 +230,7 @@
 
   var openTextarea = function(event) {
     var td = event.target;
-    if (td.nodeName != 'TD' || Array.from(td.parentNode.children).indexOf(td) != 5) return;
+    if (td.nodeName != 'TD' || !td.parentNode.parentNode.parentNode.classList.contains('results') || Array.from(td.parentNode.children).indexOf(td) != 5) return;
     var textarea = document.createElement('TEXTAREA');
     textarea.value = td.textContent;
     textarea.placeholder = 'Please resave the file after commenting.';
@@ -256,7 +256,7 @@
     <table>
       <tbody>
         <tr id="include">
-          <td class="index"><input oninput="filterSegments(this, include)" placeholder=""></td>
+          <td class="id"><input oninput="filterSegments(this, include)" placeholder="" title="Text"></td>
           <td class="string"><input oninput="filterSegments(this, include)"></td>
           <td class="string"><input oninput="filterSegments(this, include)"></td>
           <td class="string"><input oninput="filterSegments(this, include)"></td>
@@ -264,7 +264,7 @@
           <td class="note"><input oninput="filterSegments(this, include)"></td>
         </tr>
         <tr id="exclude">
-          <td><input oninput="filterSegments(this, exclude)" placeholder="!"></td>
+          <td><input oninput="filterSegments(this, exclude)" placeholder="!" title="NOT"></td>
           <td><input oninput="filterSegments(this, exclude)"></td>
           <td><input oninput="filterSegments(this, exclude)"></td>
           <td><input oninput="filterSegments(this, exclude)"></td>
@@ -272,7 +272,7 @@
           <td><input oninput="filterSegments(this, exclude)"></td>
         </tr>
         <tr id="includeRegex">
-          <td><input oninput="filterSegments(this, includeRegex)" placeholder=".*"></td>
+          <td><input oninput="filterSegments(this, includeRegex)" placeholder=".*" title="Regular expression"></td>
           <td><input oninput="filterSegments(this, includeRegex)"></td>
           <td><input oninput="filterSegments(this, includeRegex)"></td>
           <td><input oninput="filterSegments(this, includeRegex)"></td>
@@ -280,7 +280,7 @@
           <td><input oninput="filterSegments(this, includeRegex)"></td>
         </tr>
         <tr id="excludeRegex">
-          <td><input oninput="filterSegments(this, excludeRegex)" placeholder="! .*"></td>
+          <td><input oninput="filterSegments(this, excludeRegex)" placeholder="! .*" title="NOT, Regular expression"></td>
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
@@ -288,7 +288,7 @@
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
         </tr>
         <tr id="numberRange">
-          <td><input oninput="filterSegments(this, numberRange)" placeholder="1-2"></td>
+          <td><input oninput="filterSegments(this, numberRange)" placeholder="1-2" title="Number range"></td>
           <td><input oninput="filterSegments(this, numberRange)" disabled></td>
           <td><input oninput="filterSegments(this, numberRange)" disabled></td>
           <td><input oninput="filterSegments(this, numberRange)" disabled></td>
@@ -306,7 +306,7 @@
     <table border="1" class="results">
       <tbody>
         <tr>
-          <th class="index">Index</th>
+          <th class="id">ID</th>
           <th class="string">Source</th>
           <th class="string">Target (File1)</th>
           <th class="string">Target (File2)</th>

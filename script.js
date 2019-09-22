@@ -134,12 +134,12 @@ const compareContents = function(readers1, readers2) {
   let contents2 = {};
   let results = {};
   for (let reader2 of readers2) {
-    const [original, target] = parseXliff(reader2.result, 'target');
-    contents2[original] = {'target': target};
+    const [original, source, target, percent, note] = parseXliff(reader2.result, 2);
+    contents2[original] = {'target': target, 'note': note};
   }
   for (let reader1 of readers1) {
-    const [original, source, percent] = parseXliff(reader1.result, 'source');
-    contents1[original] = {'source': source, 'target': parseXliff(reader1.result, 'target')[1]};
+    const [original, source, target, percent, note] = parseXliff(reader1.result, 1);
+    contents1[original] = {'source': source, 'target': target, 'note': note};
 
     if (
       contents2.hasOwnProperty(original) &&
@@ -147,36 +147,48 @@ const compareContents = function(readers1, readers2) {
     ) {
       results[original] = [];
       for (let i = 1; i < contents1[original].target.length; i++) {
-        let shortSource = tagToPlaceholder(contents1[original].source[i]);
-        let stringArray1 = tagAsOneChar(contents1[original].target[i]);
-        let stringArray2 = tagAsOneChar(contents2[original].target[i]);
+        let shortSource = contents1[original].source[i]? tagToPlaceholder(contents1[original].source[i]): '';
+        let stringArray1 = contents1[original].target[i]? tagAsOneChar(contents1[original].target[i]): [];
+        let stringArray2 = contents2[original].target[i]? tagAsOneChar(contents2[original].target[i]): [];
         let [dpTable, distance] = diffDP(stringArray1, stringArray2);
         let [diffString1, diffString2] = diffSES(dpTable, stringArray1, stringArray2);
-        results[original].push([i, shortSource, diffString1, diffString2, percent[i], '', distance]);
+        let combinedNote = contents1[original].note[i] + contents2[original].note[i] || ''; // undefined + undefined = NaN
+        results[original].push([i, shortSource, diffString1, diffString2, percent[i], combinedNote, distance]);
       }
     }
   }
   displayResults(results);
 };
 
-const parseXliff = function(content, language) {
+const parseXliff = function(content, fileNum) {
   const original = /<file [^>]*?original="([^"]+?)"/.exec(content)[1];
-  let parsedContent = [];
+  let parsedSource = [];
+  let parsedTarget = [];
   let parsedPercent = [];
+  let parsedNote = [];
   const trimmedContent = content.replace(/<mq:historical-unit[^]+?<\/mq:historical-unit>/g, '');
   const regexTransUnit = new RegExp('<trans-unit id="(\\d+)(?:\\[\\d\\])?"([^>]*?)>([^]+?)</trans-unit>', 'g');
   const regexMQPercent = /mq:percent="(\d+)"/;
-  const regex = new RegExp(`<${language}[^>]*?>([^]*?)</${language}>`);
-  let match, matchMQPercent;
+  const regexSource = new RegExp('<source[^>]*?>([^]*?)</source>');
+  const regexTarget = new RegExp('<target[^>]*?>([^]*?)</target>');
+  const regexComment = new RegExp('<mq:comment[^>]*?deleted="false"[^>]*?>([^]*?)</mq:comment>', 'g');
+  let match, noteMatch;
   let transId = 0;
   while (match = regexTransUnit.exec(trimmedContent)) {
     transId = match[1];
-    matchMQPercent = regexMQPercent.exec(match[2]);
-    let segmentMatch = regex.exec(match[3]);
-    parsedContent[transId] = segmentMatch? segmentMatch[1]: '';
+    let matchMQPercent = regexMQPercent.exec(match[2]);
+    let sourceMatch = regexSource.exec(match[3]);
+    let targetMatch = regexTarget.exec(match[3]);
+    let note = '';
+    while (noteMatch = regexComment.exec(match[3])) {
+      note += `(${fileNum}) ${noteMatch[1]}\n`;
+    }
+    parsedSource[transId] = sourceMatch? sourceMatch[1]: '';
+    parsedTarget[transId] = targetMatch? targetMatch[1]: '';
     parsedPercent[transId] = matchMQPercent? matchMQPercent[1]: 0;
+    parsedNote[transId] = note;
   }
-  return [original, parsedContent, parsedPercent];
+  return [original, parsedSource, parsedTarget, parsedPercent, parsedNote];
 };
 
 const convertXMLEntities = function(string) {
@@ -302,6 +314,9 @@ const displayResults = function(results) {
         const templateMatch = /<!-- Template Start -->([^]+?)<!-- Template End -->/.exec(reader.result);
         let resultBlob = new Blob([
           reader.result.replace(
+            '<title>{ph0}</title>',
+            `<title>Trans_Diff_${Object.keys(results)[0]}</title>`
+          ).replace(
             templateMatch[0],
             Object.keys(resultTables).map(original => templateMatch[1].replace('{ph1}', original).replace('{ph2}', resultTables[original])).join('\n')
           )
