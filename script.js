@@ -152,7 +152,7 @@ const compareContents = function(readers1, readers2) {
         let stringArray2 = tagAsOneChar(contents2[original].target[i]);
         let [dpTable, distance] = diffDP(stringArray1, stringArray2);
         let [diffString1, diffString2] = diffSES(dpTable, stringArray1, stringArray2);
-        results[original].push([i, shortSource, diffString1, diffString2, percent[i], distance]);
+        results[original].push([i, shortSource, diffString1, diffString2, percent[i], '', distance]);
       }
     }
   }

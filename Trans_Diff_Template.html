@@ -12,10 +12,13 @@
       small { font-size: 75%; }
       table { border-collapse: collapse; table-layout: fixed; white-space: pre-wrap; width: 100%; }
       td { word-wrap: break-word; }
+      textarea { margin: 0; width: 100%; }
       .different { background: #dff; }
-      .index { width: 5%; }
-      .percent { width: 4%; }
-      .string { width: 30%; }
+      .fileName { display: inline-block; }
+      .index { width: 3%; }
+      .note { width: 12%; }
+      .percent { width: 3%; }
+      .string { width: 27%; }
       .tag { opacity: 0.5; }
     </style>
 
@@ -26,7 +29,8 @@
 
   var assessKey = function(event) {
     if (event.ctrlKey || event.altKey || event.metaKey
-    || document.activeElement.nodeName === 'INPUT') {
+    || document.activeElement.nodeName === 'INPUT'
+    || document.activeElement.nodeName === 'TEXTAREA') {
       return;
     }
     switch (event.keyCode){
@@ -177,15 +181,6 @@
     toggleSegmentVisibility(allTr);
   };
 
-  var toggleTags = function() {
-    var allTags = document.querySelectorAll('.tag');
-    for (var i = 0, n = allTags.length; i < n; i ++) {
-      [allTags[i].textContent, allTags[i].title] = [allTags[i].title, allTags[i].textContent];
-    }
-    document.switchedOn.expanded = !document.switchedOn.expanded;
-    document.getElementById('buttonTags').innerHTML = `${document.switchedOn.expanded? 'Collapse': 'Expand'} <u>T</u>ags`;
-  };
-
   var toggleUnchanged = function() {
     var allTr = document.querySelectorAll('.results tr');
     if (!document.switchedOn.unchanged){
@@ -205,6 +200,23 @@
     document.getElementById('buttonUnchanged').innerHTML = `${document.switchedOn.unchanged? 'Show': 'Hide'} <u>U</u>nchanged Segments`;
   };
 
+  var toggleTags = function() {
+    var allTags = document.querySelectorAll('.tag');
+    for (var i = 0, n = allTags.length; i < n; i ++) {
+      [allTags[i].textContent, allTags[i].title] = [allTags[i].title, allTags[i].textContent];
+    }
+    document.switchedOn.expanded = !document.switchedOn.expanded;
+    document.getElementById('buttonTags').innerHTML = `${document.switchedOn.expanded? 'Collapse': 'Expand'} <u>T</u>ags`;
+  };
+
+  var resaveFile = function() {
+    var blob = new Blob(['<!DOCTYPE html>', document.documentElement.innerHTML]);
+    var link = document.createElement('A');
+    link.download = decodeURI(window.location.pathname.split('/').pop());
+    link.href = URL.createObjectURL(blob);
+    link.click();
+  };
+
   var toggleTbody = function(h2) {
     var tbody = h2.nextSibling.nextSibling;
     if (h2.textContent[0] === '▼') {
@@ -216,12 +228,30 @@
     }
   };
 
+  var openTextarea = function(event) {
+    var td = event.target;
+    if (td.nodeName != 'TD' || Array.from(td.parentNode.children).indexOf(td) != 5) return;
+    var textarea = document.createElement('TEXTAREA');
+    textarea.value = td.textContent;
+    textarea.placeholder = 'Please resave the file after commenting.';
+    td.textContent = '';
+    td.appendChild(textarea);
+    textarea.focus();
+    textarea.style.height = textarea.scrollHeight + 'px';
+    textarea.addEventListener('blur', function() {
+      td.innerHTML = textarea.value;
+    });
+  };
+
+  document.addEventListener('click', openTextarea);
+
   </script>
   </head>
   <body>
     <div class="header">
       <button id="buttonUnchanged" onclick="toggleUnchanged()" style="font-size: 16px;">Hide <u>U</u>nchanged Segments</button>
       <button id="buttonTags" onclick="toggleTags()" style="font-size: 16px;">Expand <u>T</u>ags</button>
+      <button id="buttonResave" onclick="resaveFile()" style="font-size: 16px; float: right;">Resave Commented File</button>
 
     <table>
       <tbody>
@@ -231,9 +261,11 @@
           <td class="string"><input oninput="filterSegments(this, include)"></td>
           <td class="string"><input oninput="filterSegments(this, include)"></td>
           <td class="percent"><input oninput="filterSegments(this, include)"></td>
+          <td class="note"><input oninput="filterSegments(this, include)"></td>
         </tr>
         <tr id="exclude">
           <td><input oninput="filterSegments(this, exclude)" placeholder="!"></td>
+          <td><input oninput="filterSegments(this, exclude)"></td>
           <td><input oninput="filterSegments(this, exclude)"></td>
           <td><input oninput="filterSegments(this, exclude)"></td>
           <td><input oninput="filterSegments(this, exclude)"></td>
@@ -245,9 +277,11 @@
           <td><input oninput="filterSegments(this, includeRegex)"></td>
           <td><input oninput="filterSegments(this, includeRegex)"></td>
           <td><input oninput="filterSegments(this, includeRegex)"></td>
+          <td><input oninput="filterSegments(this, includeRegex)"></td>
         </tr>
         <tr id="excludeRegex">
           <td><input oninput="filterSegments(this, excludeRegex)" placeholder="! .*"></td>
+          <td><input oninput="filterSegments(this, excludeRegex)"></td>
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
           <td><input oninput="filterSegments(this, excludeRegex)"></td>
@@ -259,6 +293,7 @@
           <td><input oninput="filterSegments(this, numberRange)" disabled></td>
           <td><input oninput="filterSegments(this, numberRange)" disabled></td>
           <td><input oninput="filterSegments(this, numberRange)"></td>
+          <td><input oninput="filterSegments(this, numberRange)" disabled></td>
         </tr>
       </tbody>
     </table>
@@ -267,7 +302,7 @@
     </div>
 
 <!-- Template Start -->
-    <h2 onclick="toggleTbody(this)"><small>▼</small>{ph1}</h2>
+    <h2 class="fileName" onclick="toggleTbody(this)"><small>▼</small>{ph1}</h2>
     <table border="1" class="results">
       <tbody>
         <tr>
@@ -276,6 +311,7 @@
           <th class="string">Target (File1)</th>
           <th class="string">Target (File2)</th>
           <th class="percent">%</th>
+          <th class="note">Note</th>
         </tr>
 {ph2}
       </tbody>

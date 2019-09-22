@@ -6,7 +6,7 @@ Create a filterable diff table from xliff files
 
 - [x] Support single file
 - [x] Support multiple files (detect file IDs)
-- [ ] Save comments
+- [x] Save comments
 - [ ] Unzip .mqxlz files
 
 ### How to use
@@ -17,6 +17,12 @@ Supported file types:
 
 - .xlf ([XLIFF version 1.2](http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html) - intended for [XLIFF files downloaded from Transifex](https://docs.transifex.com/projects/downloading-translations#section-downloading-translations-for-a-specific-language)])
 - .mqxliff (.mqxlz not supported at the moment)
+
+Features:
+
+- Filter segments so that only changed segments are visible or all segments are visible
+- Filter segments with text or number range, regular expression is supported
+- Click in the Note column to add comments, please remember to resave the file after commenting (Ctrl/Cmd+S or clicking the Resave button)
 
 ### Downloading XLIFF files
 
