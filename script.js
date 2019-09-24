@@ -134,12 +134,12 @@ const compareContents = function(readers1, readers2) {
   let contents2 = {};
   let results = {};
   for (let reader2 of readers2) {
-    const [original, transId, source, target, percent, note] = parseXliff(reader2.result, 2);
-    contents2[original] = {'target': target, 'note': note};
+    const [original, transId, source, target, percent, noteArrays] = parseXliff(reader2.result, 2);
+    contents2[original] = {'target': target, 'note': noteArrays};
   }
   for (let reader1 of readers1) {
-    const [original, transId, source, target, percent, note] = parseXliff(reader1.result, 1);
-    contents1[original] = {'source': source, 'target': target, 'note': note};
+    const [original, transId, source, target, percent, noteArrays] = parseXliff(reader1.result, 1);
+    contents1[original] = {'source': source, 'target': target, 'note': noteArrays};
 
     if (
       contents2.hasOwnProperty(original) &&
@@ -152,7 +152,7 @@ const compareContents = function(readers1, readers2) {
         let stringArray2 = contents2[original].target[i]? tagAsOneChar(contents2[original].target[i]): [];
         let [dpTable, distance] = diffDP(stringArray1, stringArray2);
         let [diffString1, diffString2] = diffSES(dpTable, stringArray1, stringArray2);
-        let combinedNote = contents1[original].note[i] + contents2[original].note[i] || ''; // undefined + undefined = NaN
+        let combinedNote = combineNote(contents1[original].note[i], contents2[original].note[i]);
         results[original].push([transId[i], shortSource, diffString1, diffString2, percent[i], combinedNote, distance]);
       }
     }
@@ -160,36 +160,36 @@ const compareContents = function(readers1, readers2) {
   displayResults(results);
 };
 
-const parseXliff = function(content, fileNum) {
+const parseXliff = function(content) {
   const original = /<file [^>]*?original="([^"]+?)"/.exec(content)[1];
   let parsedTransId = [];
   let parsedSource = [];
   let parsedTarget = [];
   let parsedPercent = [];
-  let parsedNote = [];
+  let parsedNoteArrays = [];
   const trimmedContent = content.replace(/<mq:historical-unit[^]+?<\/mq:historical-unit>/g, '').replace(/<alt-trans[^]+?<\/alt-trans>/g, '');
   const regexTransUnit = new RegExp('<trans-unit id="([^"]+?)"([^>]*?)>([^]+?)</trans-unit>', 'g');
   const regexPercent = new RegExp('(mq:percent|xmatch)="(\\d+)"');
   const regexSource = new RegExp('<source[^>]*?>([^]*?)</source>');
   const regexTarget = new RegExp('<target[^>]*?>([^]*?)</target>');
-  const regexComment = new RegExp('<mq:comment[^>]*?deleted="false"[^>]*?>([^]*?)</mq:comment>', 'g');
+  const regexComment = new RegExp('(<mq:comment[^>]*?deleted="false"[^>]*?>([^]*?)</mq:comment>|<note>([^]*?)</note>)', 'g');
   let match, noteMatch;
   while (match = regexTransUnit.exec(trimmedContent)) {
     let transId = match[1];
     let matchPercent = regexPercent.exec(match[2]);
     let sourceMatch = regexSource.exec(match[3]);
     let targetMatch = regexTarget.exec(match[3]);
-    let note = '';
+    let notes = [];
     while (noteMatch = regexComment.exec(match[3])) {
-      note += `(${fileNum}) ${noteMatch[1]}\n`;
+      notes.push(noteMatch[2] || noteMatch[3] || '');
     }
     parsedTransId.push(transId);
     parsedSource.push(sourceMatch? sourceMatch[1]: '');
     parsedTarget.push(targetMatch? targetMatch[1]: '');
     parsedPercent.push(matchPercent? matchPercent[2]: 0);
-    parsedNote.push(note);
+    parsedNoteArrays.push(notes);
   }
-  return [original, parsedTransId, parsedSource, parsedTarget, parsedPercent, parsedNote];
+  return [original, parsedTransId, parsedSource, parsedTarget, parsedPercent, parsedNoteArrays];
 };
 
 const convertXMLEntities = function(string) {
@@ -210,6 +210,23 @@ const tagAsOneChar = function(string) {
 
 const tagToPlaceholder = function(string) {
   return string.replace(/(<ph[^>]*?>.*?<\/ph[^>]*?>|&lt;.*?&gt;)/g, $0 => `<span class="tag" title="${$0.startsWith('<ph')? convertXMLEntities($0): $0}">⬣</span>`);
+};
+
+const combineNote = function(noteArray1, noteArray2) {
+  let combinedNote = '';
+  for (let i = 0; i < noteArray1.length; i ++) {
+    let index2 = noteArray2.indexOf(noteArray1[i]);
+    if (index2 > -1) {
+      delete noteArray2[index2];
+      if (noteArray1[i]) combinedNote += `(1&2) ${noteArray1[i]}\n`;
+    } else {
+      if (noteArray1[i]) combinedNote += `(1) ${noteArray1[i]}\n`;
+    }
+  }
+  for (let i = 0; i < noteArray2.length; i ++) {
+    if (noteArray2[i]) combinedNote += `(2) ${noteArray2[i]}\n`;
+  }
+  return combinedNote;
 };
 
 const diffDP = function(stringArray1, stringArray2) {
