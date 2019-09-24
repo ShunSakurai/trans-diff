@@ -114,8 +114,8 @@ const hasError = function() {
   if (
     (!files1 || !files2) ||
     (files1.length != files2.length) ||
-    (!files1[0].name.endsWith('.xlf') && !files1[0].name.endsWith('.mqxliff')) ||
-    (!files2[0].name.endsWith('.xlf') && !files2[0].name.endsWith('.mqxliff'))
+    (!Array.from(files1).every(file => ['xlf', 'mqxliff', 'mxliff'].indexOf(file.name.split('.').pop()) >= 0)) ||
+    (!Array.from(files2).every(file => ['xlf', 'mqxliff', 'mxliff'].indexOf(file.name.split('.').pop()) >= 0))
   ) {
     displayError();
     return true;
@@ -134,11 +134,11 @@ const compareContents = function(readers1, readers2) {
   let contents2 = {};
   let results = {};
   for (let reader2 of readers2) {
-    const [original, source, target, percent, note] = parseXliff(reader2.result, 2);
+    const [original, transId, source, target, percent, note] = parseXliff(reader2.result, 2);
     contents2[original] = {'target': target, 'note': note};
   }
   for (let reader1 of readers1) {
-    const [original, source, target, percent, note] = parseXliff(reader1.result, 1);
+    const [original, transId, source, target, percent, note] = parseXliff(reader1.result, 1);
     contents1[original] = {'source': source, 'target': target, 'note': note};
 
     if (
@@ -146,14 +146,14 @@ const compareContents = function(readers1, readers2) {
       contents1[original].target.length == contents2[original].target.length
     ) {
       results[original] = [];
-      for (let i = 1; i < contents1[original].target.length; i++) {
+      for (let i = 0; i < contents1[original].target.length; i++) {
         let shortSource = contents1[original].source[i]? tagToPlaceholder(contents1[original].source[i]): '';
         let stringArray1 = contents1[original].target[i]? tagAsOneChar(contents1[original].target[i]): [];
         let stringArray2 = contents2[original].target[i]? tagAsOneChar(contents2[original].target[i]): [];
         let [dpTable, distance] = diffDP(stringArray1, stringArray2);
         let [diffString1, diffString2] = diffSES(dpTable, stringArray1, stringArray2);
         let combinedNote = contents1[original].note[i] + contents2[original].note[i] || ''; // undefined + undefined = NaN
-        results[original].push([i, shortSource, diffString1, diffString2, percent[i], combinedNote, distance]);
+        results[original].push([transId[i], shortSource, diffString1, diffString2, percent[i], combinedNote, distance]);
       }
     }
   }
@@ -162,33 +162,34 @@ const compareContents = function(readers1, readers2) {
 
 const parseXliff = function(content, fileNum) {
   const original = /<file [^>]*?original="([^"]+?)"/.exec(content)[1];
+  let parsedTransId = [];
   let parsedSource = [];
   let parsedTarget = [];
   let parsedPercent = [];
   let parsedNote = [];
-  const trimmedContent = content.replace(/<mq:historical-unit[^]+?<\/mq:historical-unit>/g, '');
-  const regexTransUnit = new RegExp('<trans-unit id="(\\d+)(?:\\[\\d\\])?"([^>]*?)>([^]+?)</trans-unit>', 'g');
-  const regexMQPercent = /mq:percent="(\d+)"/;
+  const trimmedContent = content.replace(/<mq:historical-unit[^]+?<\/mq:historical-unit>/g, '').replace(/<alt-trans[^]+?<\/alt-trans>/g, '');
+  const regexTransUnit = new RegExp('<trans-unit id="([^"]+?)"([^>]*?)>([^]+?)</trans-unit>', 'g');
+  const regexPercent = new RegExp('(mq:percent|xmatch)="(\\d+)"');
   const regexSource = new RegExp('<source[^>]*?>([^]*?)</source>');
   const regexTarget = new RegExp('<target[^>]*?>([^]*?)</target>');
   const regexComment = new RegExp('<mq:comment[^>]*?deleted="false"[^>]*?>([^]*?)</mq:comment>', 'g');
   let match, noteMatch;
-  let transId = 0;
   while (match = regexTransUnit.exec(trimmedContent)) {
-    transId = match[1];
-    let matchMQPercent = regexMQPercent.exec(match[2]);
+    let transId = match[1];
+    let matchPercent = regexPercent.exec(match[2]);
     let sourceMatch = regexSource.exec(match[3]);
     let targetMatch = regexTarget.exec(match[3]);
     let note = '';
     while (noteMatch = regexComment.exec(match[3])) {
       note += `(${fileNum}) ${noteMatch[1]}\n`;
     }
-    parsedSource[transId] = sourceMatch? sourceMatch[1]: '';
-    parsedTarget[transId] = targetMatch? targetMatch[1]: '';
-    parsedPercent[transId] = matchMQPercent? matchMQPercent[1]: 0;
-    parsedNote[transId] = note;
+    parsedTransId.push(transId);
+    parsedSource.push(sourceMatch? sourceMatch[1]: '');
+    parsedTarget.push(targetMatch? targetMatch[1]: '');
+    parsedPercent.push(matchPercent? matchPercent[2]: 0);
+    parsedNote.push(note);
   }
-  return [original, parsedSource, parsedTarget, parsedPercent, parsedNote];
+  return [original, parsedTransId, parsedSource, parsedTarget, parsedPercent, parsedNote];
 };
 
 const convertXMLEntities = function(string) {

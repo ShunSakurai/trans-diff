@@ -14,11 +14,10 @@
       td { word-wrap: break-word; }
       textarea { margin: 0; width: 100%; }
       .different { background: #dff; }
-      .fileName { display: inline-block; }
-      .id { width: 3%; }
+      .id { width: 6%; }
       .note { width: 12%; }
       .percent { width: 3%; }
-      .string { width: 27%; }
+      .string { width: 26%; }
       .tag { opacity: 0.5; }
     </style>
 
@@ -217,13 +216,14 @@
     link.click();
   };
 
-  var toggleTbody = function(h2) {
+  var toggleTbody = function(span) {
+    var h2 = span.parentNode;
     var tbody = h2.nextSibling.nextSibling;
     if (h2.textContent[0] === '▼') {
-      h2.innerHTML = '<small>▷</small>' + h2.textContent.slice(1);
+      h2.firstChild.firstChild.textContent = '▷';
       tbody.style.display = 'None';
     } else {
-      h2.innerHTML = '<small>▼</small>' + h2.textContent.slice(1);
+      h2.firstChild.firstChild.textContent = '▼';
       tbody.style.display = '';
     }
   };
@@ -302,7 +302,7 @@
     </div>
 
 <!-- Template Start -->
-    <h2 class="fileName" onclick="toggleTbody(this)"><small>▼</small>{ph1}</h2>
+    <h2><span onclick="toggleTbody(this)"><small>▼</small>{ph1}</span></h2>
     <table border="1" class="results">
       <tbody>
         <tr>
