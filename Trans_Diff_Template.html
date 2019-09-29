@@ -30,8 +30,14 @@
   window.addEventListener('load', function() {
     buttonUnchanged = document.getElementById('buttonUnchanged');
     buttonTags = document.getElementById('buttonTags');
-    buttonUnchanged.innerHTML = `${buttonUnchanged.dataset.on? 'Show': 'Hide'} <u>U</u>nchanged Segments`;
-    buttonTags.innerHTML = `${buttonTags.dataset.on? 'Collapse': 'Expand'} <u>T</u>ags`;
+    buttonUnchanged.innerHTML = `${buttonUnchanged.dataset.on ? 'Show' : 'Hide'} <u>U</u>nchanged Segments`;
+    buttonTags.innerHTML = `${buttonTags.dataset.on ? 'Collapse' : 'Expand'} <u>T</u>ags`;
+
+    Array.from(document.querySelectorAll('#filter input')).forEach(function(input) {
+      input.addEventListener('input', function(event) {
+        filterSegments(event.target, event.target.parentNode.parentNode.id);
+      });
+    });
   });
 
   var assessKey = function(event) {
@@ -40,7 +46,7 @@
     || document.activeElement.nodeName === 'TEXTAREA') {
       return;
     }
-    switch (event.keyCode){
+    switch (event.keyCode) {
       case 'C'.charCodeAt(0):
         clearFilter();
         break;
@@ -76,84 +82,82 @@
     }
   };
 
-  var toggleSegmentVisibility = function (allTr) {
+  var toggleSegmentVisibility = function(allTr) {
     var displayNoneArray = new Array(allTr.length).fill(false);
     var n = allTr.length;
     for (var key in document.displayNone) {
       if (document.displayNone.hasOwnProperty(key)
       && typeof document.displayNone[key] === 'object') {
-        for (var i = 0; i < n; i ++){
+        for (var i = 0; i < n; i ++) {
           displayNoneArray[i] = displayNoneArray[i] || document.displayNone[key][i];
         }
       }
     }
-    for (var j = 0; j < n; j ++){
-      allTr[j].style.display = displayNoneArray[j]? 'None': '';
+    for (var j = 0; j < n; j ++) {
+      allTr[j].style.display = displayNoneArray[j] ? 'None' : '';
     }
   };
 
-  var include = function(range, string) {
-    return range.indexOf(string) === -1;
-  };
+  var filterFunctions = {
+    include: function(range, string) {
+      return range.indexOf(string) === -1;
+    },
 
-  var exclude = function(range, string) {
-    if (string === '') {
-      return;
-    }
-    return range.indexOf(string) !== -1;
-  };
+    exclude: function(range, string) {
+      if (string === '') return;
+      return range.indexOf(string) !== -1;
+    },
 
-  var includeRegex = function(range, string) {
-    try {
-      var regex = new RegExp(string);
-      return !regex.exec(range);
-    } catch (e) {
-      if (e instanceof SyntaxError){
-        return;
-      } else {
-        throw e;
+    includeRegex: function(range, string) {
+      try {
+        var regex = new RegExp(string);
+        return !regex.exec(range);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          return;
+        } else {
+          throw e;
+        }
       }
-    }
-  };
+    },
 
-  var excludeRegex = function(range, string) {
-    if (string === '') {
-      return;
-    }
-    try {
-      var regex = new RegExp(string);
-      return regex.exec(range);
-    } catch (e) {
-      if (e instanceof SyntaxError){
-        return;
-      } else {
-        throw e;
+    excludeRegex: function(range, string) {
+      if (string === '') return;
+      try {
+        var regex = new RegExp(string);
+        return regex.exec(range);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          return;
+        } else {
+          throw e;
+        }
       }
+    },
+
+    numberRange: function(range, string) {
+      var match = /^(\d+)\-(\d+)$/.exec(string);
+      var numberInRange = parseInt(range);
+      if (!match || isNaN(numberInRange)) {
+        return;
+      }
+      return !(match[1] <= numberInRange && numberInRange <= match[2]);
     }
   };
 
-  var numberRange = function(range, string) {
-    var match = /^(\d+)\-(\d+)$/.exec(string);
-    var numberInRange = parseInt(range);
-    if (!match || isNaN(numberInRange)) {
-      return;
-    }
-    return !(match[1] <= numberInRange && numberInRange <= match[2]);
-  };
-
-  var filterSegments = function(element, func) {
-    var td = element.parentNode;
+  var filterSegments = function(input, funcName) {
+    var td = input.parentNode;
     var column = Array.from(td.parentNode.children).indexOf(td);
-    var filterId = func.name + 'Filter' + column;
+    var filterId = funcName + 'Filter' + column;
     var allTr = document.querySelectorAll('.results tr');
 
-    if (!element.value) {
+    if (!input.value) {
       delete document.displayNone[filterId];
     } else {
       document.displayNone[filterId] = [];
       for (var i = 0, n = allTr.length; i < n; i ++) {
         if (allTr[i].children[0].nodeName === 'TD'
-        && func(allTr[i].children[column].textContent, element.value)){
+        && filterFunctions[funcName](allTr[i].children[column].textContent, input.value)) {
           document.displayNone[filterId].push(true);
         } else {
           document.displayNone[filterId].push(false);
@@ -163,21 +167,21 @@
     toggleSegmentVisibility(allTr);
   };
 
-  var clearFilter = function () {
-    ['include', 'exclude', 'includeRegex', 'excludeRegex', 'numberRange'].forEach(function(id){
+  var clearFilter = function() {
+    ['include', 'exclude', 'includeRegex', 'excludeRegex', 'numberRange'].forEach(function(id) {
       var filterTd = document.getElementById(id).children;
       for (var td in filterTd) {
         if (filterTd.hasOwnProperty(td)
-        && filterTd[td].nodeName === 'TD'){
-          for (var input in filterTd[td].children){
+        && filterTd[td].nodeName === 'TD') {
+          for (var input in filterTd[td].children) {
             if (filterTd[td].children.hasOwnProperty(input)
-            && filterTd[td].children[input].nodeName === 'INPUT'){
+            && filterTd[td].children[input].nodeName === 'INPUT') {
               filterTd[td].children[input].value = '';
             }
           }
         }
       }
-      for (var key in document.displayNone){
+      for (var key in document.displayNone) {
         if (document.displayNone.hasOwnProperty(key)
         && key.indexOf('Filter') >= 0) {
           delete document.displayNone[key];
@@ -190,7 +194,7 @@
 
   var toggleUnchanged = function() {
     var allTr = document.querySelectorAll('.results tr');
-    if (!buttonUnchanged.dataset.on){
+    if (!buttonUnchanged.dataset.on) {
       document.displayNone.unchanged = [];
       for (var i = 0, n = allTr.length; i < n; i ++) {
         if (allTr[i].classList.contains('same')) {
@@ -208,7 +212,7 @@
     } else {
       buttonUnchanged.setAttribute('data-on', 'true');
     }
-    buttonUnchanged.innerHTML = `${buttonUnchanged.dataset.on? 'Show': 'Hide'} <u>U</u>nchanged Segments`;
+    buttonUnchanged.innerHTML = `${buttonUnchanged.dataset.on ? 'Show' : 'Hide'} <u>U</u>nchanged Segments`;
   };
 
   var toggleTags = function() {
@@ -221,7 +225,7 @@
     } else {
       buttonTags.setAttribute('data-on', 'true');
     }
-    buttonTags.innerHTML = `${buttonTags.dataset.on? 'Collapse': 'Expand'} <u>T</u>ags`;
+    buttonTags.innerHTML = `${buttonTags.dataset.on ? 'Collapse' : 'Expand'} <u>T</u>ags`;
   };
 
   var resaveFile = function() {
@@ -269,47 +273,47 @@
       <button id="buttonTags" onclick="toggleTags()" style="font-size: 16px;">Expand <u>T</u>ags</button>
       <button id="buttonResave" onclick="resaveFile()" style="font-size: 16px; float: right;">Resave Commented File</button>
 
-    <table>
+    <table id="filter">
       <tbody>
         <tr id="include">
-          <td class="id"><input oninput="filterSegments(this, include)" placeholder="" title="Text"></td>
-          <td class="string"><input oninput="filterSegments(this, include)"></td>
-          <td class="string"><input oninput="filterSegments(this, include)"></td>
-          <td class="string"><input oninput="filterSegments(this, include)"></td>
-          <td class="percent"><input oninput="filterSegments(this, include)"></td>
-          <td class="note"><input oninput="filterSegments(this, include)"></td>
+          <td class="id"><input placeholder="" title="Text"></td>
+          <td class="string"><input></td>
+          <td class="string"><input></td>
+          <td class="string"><input></td>
+          <td class="percent"><input></td>
+          <td class="note"><input></td>
         </tr>
         <tr id="exclude">
-          <td><input oninput="filterSegments(this, exclude)" placeholder="!" title="NOT"></td>
-          <td><input oninput="filterSegments(this, exclude)"></td>
-          <td><input oninput="filterSegments(this, exclude)"></td>
-          <td><input oninput="filterSegments(this, exclude)"></td>
-          <td><input oninput="filterSegments(this, exclude)"></td>
-          <td><input oninput="filterSegments(this, exclude)"></td>
+          <td><input placeholder="!" title="NOT"></td>
+          <td><input></td>
+          <td><input></td>
+          <td><input></td>
+          <td><input></td>
+          <td><input></td>
         </tr>
         <tr id="includeRegex">
-          <td><input oninput="filterSegments(this, includeRegex)" placeholder=".*" title="Regular expression"></td>
-          <td><input oninput="filterSegments(this, includeRegex)"></td>
-          <td><input oninput="filterSegments(this, includeRegex)"></td>
-          <td><input oninput="filterSegments(this, includeRegex)"></td>
-          <td><input oninput="filterSegments(this, includeRegex)"></td>
-          <td><input oninput="filterSegments(this, includeRegex)"></td>
+          <td><input placeholder=".*" title="Regular expression"></td>
+          <td><input></td>
+          <td><input></td>
+          <td><input></td>
+          <td><input></td>
+          <td><input></td>
         </tr>
         <tr id="excludeRegex">
-          <td><input oninput="filterSegments(this, excludeRegex)" placeholder="! .*" title="NOT, Regular expression"></td>
-          <td><input oninput="filterSegments(this, excludeRegex)"></td>
-          <td><input oninput="filterSegments(this, excludeRegex)"></td>
-          <td><input oninput="filterSegments(this, excludeRegex)"></td>
-          <td><input oninput="filterSegments(this, excludeRegex)"></td>
-          <td><input oninput="filterSegments(this, excludeRegex)"></td>
+          <td><input placeholder="! .*" title="NOT, Regular expression"></td>
+          <td><input></td>
+          <td><input></td>
+          <td><input></td>
+          <td><input></td>
+          <td><input></td>
         </tr>
         <tr id="numberRange">
-          <td><input oninput="filterSegments(this, numberRange)" placeholder="1-2" title="Number range"></td>
-          <td><input oninput="filterSegments(this, numberRange)" disabled></td>
-          <td><input oninput="filterSegments(this, numberRange)" disabled></td>
-          <td><input oninput="filterSegments(this, numberRange)" disabled></td>
-          <td><input oninput="filterSegments(this, numberRange)"></td>
-          <td><input oninput="filterSegments(this, numberRange)" disabled></td>
+          <td><input placeholder="1-2" title="Number range"></td>
+          <td><input disabled></td>
+          <td><input disabled></td>
+          <td><input disabled></td>
+          <td><input></td>
+          <td><input disabled></td>
         </tr>
       </tbody>
     </table>
