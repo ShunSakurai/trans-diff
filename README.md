@@ -1,6 +1,6 @@
 # trans-diff
 
-Create a filterable diff table from xliff files
+Create a filterable, commentable diff table from XLIFF files
 
 ### Roadmap
 
@@ -33,7 +33,7 @@ It's useful to download the XLIFF files before and after you do translation or r
 ### Motivation and inspiration
 
 Originally I wanted to compare .mqxlz files but the project has been dormant because it was tricky to implement the code to unzip files in client JavaScript. It seems .mqxlz is a ZIP64 format.
-I recently often work with Transifex xliff files so I resumed this project.
+I recently often work with Transifex XLIFF files so I resumed this project.
 I was highly inspired and motivated by the diff tool by [AlissaSabre](https://github.com/AlissaSabre), not on GitHub though.
 
 ### Privacy policy and terms of use

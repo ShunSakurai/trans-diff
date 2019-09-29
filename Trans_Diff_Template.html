@@ -3,6 +3,7 @@
   <head>
     <title>{ph0}</title>
     <meta charset="UTF-8">
+    <meta name="description" content="Generated from Trans Diff - https://shunsakurai.github.io/trans-diff/">
     <style type="text/css">
       button { margin-bottom: 10px; margin-top: 5px; }
       button, th { background: #155799;  color: #fff; margin-right: 5px; opacity: 0.7; }
@@ -22,9 +23,16 @@
     </style>
 
   <script type="text/javascript">
-  document.switchedOn = {'unchanged': false, 'expanded': false};
   document.styleIndices = {};
   document.displayNone = {};
+  let buttonUnchanged, buttonTags;
+
+  window.addEventListener('load', function() {
+    buttonUnchanged = document.getElementById('buttonUnchanged');
+    buttonTags = document.getElementById('buttonTags');
+    buttonUnchanged.innerHTML = `${buttonUnchanged.dataset.on? 'Show': 'Hide'} <u>U</u>nchanged Segments`;
+    buttonTags.innerHTML = `${buttonTags.dataset.on? 'Collapse': 'Expand'} <u>T</u>ags`;
+  });
 
   var assessKey = function(event) {
     if (event.ctrlKey || event.altKey || event.metaKey
@@ -182,7 +190,7 @@
 
   var toggleUnchanged = function() {
     var allTr = document.querySelectorAll('.results tr');
-    if (!document.switchedOn.unchanged){
+    if (!buttonUnchanged.dataset.on){
       document.displayNone.unchanged = [];
       for (var i = 0, n = allTr.length; i < n; i ++) {
         if (allTr[i].classList.contains('same')) {
@@ -195,8 +203,12 @@
       delete document.displayNone.unchanged;
     }
     toggleSegmentVisibility(allTr);
-    document.switchedOn.unchanged = !document.switchedOn.unchanged;
-    document.getElementById('buttonUnchanged').innerHTML = `${document.switchedOn.unchanged? 'Show': 'Hide'} <u>U</u>nchanged Segments`;
+    if (buttonUnchanged.dataset.on !== undefined) {
+      buttonUnchanged.removeAttribute('data-on');
+    } else {
+      buttonUnchanged.setAttribute('data-on', 'true');
+    }
+    buttonUnchanged.innerHTML = `${buttonUnchanged.dataset.on? 'Show': 'Hide'} <u>U</u>nchanged Segments`;
   };
 
   var toggleTags = function() {
@@ -204,8 +216,12 @@
     for (var i = 0, n = allTags.length; i < n; i ++) {
       [allTags[i].textContent, allTags[i].title] = [allTags[i].title, allTags[i].textContent];
     }
-    document.switchedOn.expanded = !document.switchedOn.expanded;
-    document.getElementById('buttonTags').innerHTML = `${document.switchedOn.expanded? 'Collapse': 'Expand'} <u>T</u>ags`;
+    if (buttonTags.dataset.on !== undefined) {
+      buttonTags.removeAttribute('data-on');
+    } else {
+      buttonTags.setAttribute('data-on', 'true');
+    }
+    buttonTags.innerHTML = `${buttonTags.dataset.on? 'Collapse': 'Expand'} <u>T</u>ags`;
   };
 
   var resaveFile = function() {
