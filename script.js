@@ -213,20 +213,20 @@ const tagToPlaceholder = function(string) {
 };
 
 const combineNote = function(noteArray1, noteArray2) {
-  let combinedNote = '';
+  let combinedNoteArray = [];
   for (let i = 0; i < noteArray1.length; i ++) {
     let index2 = noteArray2.indexOf(noteArray1[i]);
     if (index2 > -1) {
       delete noteArray2[index2];
-      if (noteArray1[i]) combinedNote += `(1&2) ${noteArray1[i]}\n`;
+      if (noteArray1[i]) combinedNoteArray.push(`(1&2) ${noteArray1[i]}\n`);
     } else {
-      if (noteArray1[i]) combinedNote += `(1) ${noteArray1[i]}\n`;
+      if (noteArray1[i]) combinedNoteArray.push(`(1) ${noteArray1[i]}\n`);
     }
   }
   for (let i = 0; i < noteArray2.length; i ++) {
-    if (noteArray2[i]) combinedNote += `(2) ${noteArray2[i]}\n`;
+    if (noteArray2[i]) combinedNoteArray.push(`(2) ${noteArray2[i]}\n`);
   }
-  return combinedNote;
+  return [...new Set(combinedNoteArray)];
 };
 
 const diffDP = function(stringArray1, stringArray2) {
