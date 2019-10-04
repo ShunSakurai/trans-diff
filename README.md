@@ -15,6 +15,7 @@ It's pretty straight forward.
 - Export XLIFF files at the start and the end of the review.
 - Choose XLIFF files (File 1 and File 2) and click "Compare". The diff file will be downloaded automatically.
 - You can filter the diff table with changed/unchanged status or with text (regular expression is supported) or number range.
+- You can sort the table by columns by clicking the table header.
 - Click in the Note column to add comments. Please remember to resave the file after commenting (press Ctrl/Cmd+S keys or click the Resave button).
 
 Supported file types:

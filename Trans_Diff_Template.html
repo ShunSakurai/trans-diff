@@ -248,9 +248,7 @@
     }
   };
 
-  var openTextarea = function(event) {
-    var td = event.target;
-    if (td.nodeName != 'TD' || !td.parentNode.parentNode.parentNode.classList.contains('results') || Array.from(td.parentNode.children).indexOf(td) != 5) return;
+  var openTextarea = function(td) {
     var textarea = document.createElement('TEXTAREA');
     textarea.value = td.textContent;
     textarea.placeholder = 'Please resave the file after commenting.';
@@ -263,7 +261,37 @@
     });
   };
 
-  document.addEventListener('click', openTextarea);
+  var sortTable = function(th) {
+    var tableBody = th.parentNode.parentNode;
+    var header = th.parentNode;
+    for (var i = 0; i <= header.children.length - 1; i++) header.children[i].textContent = header.children[i].textContent.replace('↓', '');
+    th.textContent = th.textContent += '↓';
+    var indexTh = 0;
+    while ((th = th.previousElementSibling)) indexTh++;
+
+    var arrayTr = Array.from(tableBody.children).slice(1);
+    arrayTr.sort(function(aTr, bTr) {
+      var a = aTr.children[indexTh].textContent;
+      var b = bTr.children[indexTh].textContent;
+      if (isNaN(a) || isNaN(b)) {
+        return (a > b) ? 1 : -1;
+      } else {
+        return a - b;
+      }
+    });
+    for (var i = tableBody.children.length - 1; i >= 1; i--) {
+      tableBody.removeChild(tableBody.children[i]);
+    }
+    for (var i = 0; i <= arrayTr.length - 1; i++) {
+      tableBody.appendChild(arrayTr[i]);
+    }
+  };
+
+  document.addEventListener('click', function(event) {
+    var target = event.target;
+    if (target.nodeName == 'TD' && target.parentNode.parentNode.parentNode.classList.contains('results') && Array.from(target.parentNode.children).indexOf(target) == 5) openTextarea(target);
+    if (target.nodeName == 'TH') sortTable(target);
+  });
 
   </script>
   </head>
