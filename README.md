@@ -11,6 +11,10 @@ Create a filterable, commentable diff table from XLIFF files
 
 ### How to use
 
+Please watch the "How to use" video on YouTube for details:
+
+[![Trans Diff - How to use](https://img.youtube.com/vi/-zuSH3Bl_x0/0.jpg)](https://www.youtube.com/watch?v=-zuSH3Bl_x0)
+
 It's pretty straight forward.
 - Export XLIFF files at the start and the end of the review.
 - Choose XLIFF files (File 1 and File 2) and click "Compare". The diff file will be downloaded automatically.
@@ -23,6 +27,10 @@ Supported file types:
 - .xlf ([XLIFF version 1.2](http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html) - intended for [XLIFF files downloaded from Transifex](https://docs.transifex.com/projects/downloading-translations#section-downloading-translations-for-a-specific-language)])
 - .mqxliff (.mqxlz not supported at the moment)
 - .mxliff
+
+Limitations:
+
+- Basically, the number of segments/strings needs to be the same between File 1 and File 2.
 
 ### Downloading XLIFF files
 

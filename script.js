@@ -141,15 +141,12 @@ const compareContents = function(readers1, readers2) {
     const [original, transId, source, target, percent, noteArrays] = parseXliff(reader1.result, 1);
     contents1[original] = {'source': source, 'target': target, 'note': noteArrays};
 
-    if (
-      contents2.hasOwnProperty(original) &&
-      contents1[original].target.length == contents2[original].target.length
-    ) {
+    if (contents2.hasOwnProperty(original)) {
       results[original] = [];
       for (let i = 0; i < contents1[original].target.length; i++) {
         let shortSource = contents1[original].source[i]? tagToPlaceholder(contents1[original].source[i]): '';
         let stringArray1 = contents1[original].target[i]? tagAsOneChar(contents1[original].target[i]): [];
-        let stringArray2 = contents2[original].target[i]? tagAsOneChar(contents2[original].target[i]): [];
+        let stringArray2 = (contents2[original].target.hasOwnProperty(i) && contents2[original].target[i])? tagAsOneChar(contents2[original].target[i]): [];
         let [dpTable, distance] = diffDP(stringArray1, stringArray2);
         let [diffString1, diffString2] = diffSES(dpTable, stringArray1, stringArray2);
         let combinedNote = combineNote(contents1[original].note[i], contents2[original].note[i]);
@@ -223,8 +220,10 @@ const combineNote = function(noteArray1, noteArray2) {
       if (noteArray1[i]) combinedNoteArray.push(`(1) ${noteArray1[i]}\n`);
     }
   }
-  for (let i = 0; i < noteArray2.length; i ++) {
-    if (noteArray2[i]) combinedNoteArray.push(`(2) ${noteArray2[i]}\n`);
+  if (noteArray2 != undefined) {
+    for (let i = 0; i < noteArray2.length; i ++) {
+      if (noteArray2[i]) combinedNoteArray.push(`(2) ${noteArray2[i]}\n`);
+    }
   }
   return [...new Set(combinedNoteArray)];
 };
