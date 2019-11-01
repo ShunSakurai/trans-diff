@@ -134,11 +134,13 @@ const compareContents = function(readers1, readers2) {
   let contents2 = {};
   let results = {};
   for (let reader2 of readers2) {
-    const [original, transId, source, target, percent, noteArrays] = parseXliff(reader2.result, 2);
+    let [original, transId, source, target, percent, noteArrays] = parseXliff(reader2.result, 2);
+    while (contents2.hasOwnProperty(original)) original = original + '_';
     contents2[original] = {'target': target, 'note': noteArrays};
   }
   for (let reader1 of readers1) {
-    const [original, transId, source, target, percent, noteArrays] = parseXliff(reader1.result, 1);
+    let [original, transId, source, target, percent, noteArrays] = parseXliff(reader1.result, 1);
+    while (contents1.hasOwnProperty(original)) original = original + '_';
     contents1[original] = {'source': source, 'target': target, 'note': noteArrays};
 
     if (contents2.hasOwnProperty(original)) {
@@ -210,6 +212,7 @@ const tagToPlaceholder = function(string) {
 };
 
 const combineNote = function(noteArray1, noteArray2) {
+  if (noteArray2 == undefined) return [...new Set(noteArray1.map(note => `(1) ${note}\n`))];
   let combinedNoteArray = [];
   for (let i = 0; i < noteArray1.length; i ++) {
     let index2 = noteArray2.indexOf(noteArray1[i]);
@@ -220,10 +223,8 @@ const combineNote = function(noteArray1, noteArray2) {
       if (noteArray1[i]) combinedNoteArray.push(`(1) ${noteArray1[i]}\n`);
     }
   }
-  if (noteArray2 != undefined) {
-    for (let i = 0; i < noteArray2.length; i ++) {
-      if (noteArray2[i]) combinedNoteArray.push(`(2) ${noteArray2[i]}\n`);
-    }
+  for (let i = 0; i < noteArray2.length; i ++) {
+    if (noteArray2[i]) combinedNoteArray.push(`(2) ${noteArray2[i]}\n`);
   }
   return [...new Set(combinedNoteArray)];
 };
