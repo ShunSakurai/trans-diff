@@ -28,12 +28,26 @@
   let buttonUnchanged, buttonTags;
 
   window.addEventListener('load', function() {
+    // copied from toggleUnchanged. I'll need to clean up my code
     buttonUnchanged = document.getElementById('buttonUnchanged');
+    if (buttonUnchanged.dataset.on) {
+      var allTr = document.querySelectorAll('.results tr');
+      document.displayNone.unchanged = [];
+      for (var i = 0, n = allTr.length; i < n; i ++) {
+        if (allTr[i].classList.contains('same')) {
+          document.displayNone.unchanged.push(true);
+        } else {
+          document.displayNone.unchanged.push(false);
+        }
+      }
+    }
     buttonTags = document.getElementById('buttonTags');
-    buttonUnchanged.innerHTML = `${buttonUnchanged.dataset.on ? 'Show' : 'Hide'} <u>U</u>nchanged Segments`;
     buttonTags.innerHTML = `${buttonTags.dataset.on ? 'Collapse' : 'Expand'} <u>T</u>ags`;
 
     Array.from(document.querySelectorAll('#filter input')).forEach(function(input) {
+      input.value = input.name;
+      input.removeAttribute('name');
+      filterSegments(input, input.parentNode.parentNode.id);
       input.addEventListener('input', function(event) {
         filterSegments(event.target, event.target.parentNode.parentNode.id);
       });
@@ -229,7 +243,10 @@
   };
 
   var resaveFile = function() {
-    var blob = new Blob(['<!DOCTYPE html>', document.documentElement.innerHTML]);
+    Array.from(document.querySelectorAll('#filter input')).forEach(function(input) {
+      input.name = input.value;
+    });
+    var blob = new Blob(['<!DOCTYPE html><html>', document.documentElement.innerHTML, '</html>']);
     var link = document.createElement('A');
     link.download = decodeURI(window.location.pathname.split('/').pop());
     link.href = URL.createObjectURL(blob);
