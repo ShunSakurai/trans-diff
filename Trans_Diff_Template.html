@@ -4,10 +4,13 @@
     <title>{ph0}</title>
     <meta charset="UTF-8">
     <meta name="description" content="Generated from Trans Diff - https://shunsakurai.github.io/trans-diff/">
+    <!-- Reference for footer CSS: https://qiita.com/nozomi716/items/2b09d5bce3d08d1c41f9 -->
     <style type="text/css">
-      button { margin-bottom: 10px; margin-top: 5px; }
-      button, th { background: #155799;  color: #fff; margin-right: 5px; opacity: 0.7; }
+      body { display: flex; flex-direction: column; min-height: 100vh; }
+      button { font-family: sans-serif; margin-bottom: 10px; margin-top: 5px; }
+      button, th { background: #155799; color: #fff; margin-right: 5px; opacity: 0.7; }
       del { color: #9F0000; }
+      footer { font-family: sans-serif; margin-top: auto; text-align: center; }
       input { width: 100%; }
       ins { color: green; }
       small { font-size: 75%; }
@@ -28,7 +31,6 @@
   let buttonUnchanged, buttonTags;
 
   window.addEventListener('load', function() {
-    // copied from toggleUnchanged. I'll need to clean up my code
     buttonUnchanged = document.getElementById('buttonUnchanged');
     if (buttonUnchanged.dataset.on) {
       var allTr = document.querySelectorAll('.results tr');
@@ -321,7 +323,7 @@
     <table id="filter">
       <tbody>
         <tr id="include">
-          <td class="id"><input placeholder="" title="Text"></td>
+          <td class="id"><input placeholder="A" title="Text:&#13;&#10;Dispay segments which contain the given text."></td>
           <td class="string"><input></td>
           <td class="string"><input></td>
           <td class="string"><input></td>
@@ -329,7 +331,7 @@
           <td class="note"><input></td>
         </tr>
         <tr id="exclude">
-          <td><input placeholder="!" title="NOT"></td>
+          <td><input placeholder="!A" title="NOT:&#13;&#10;Hide segments which contain the given text."></td>
           <td><input></td>
           <td><input></td>
           <td><input></td>
@@ -337,7 +339,7 @@
           <td><input></td>
         </tr>
         <tr id="includeRegex">
-          <td><input placeholder=".*" title="Regular expression"></td>
+          <td><input placeholder=".*" title="Regular expression:&#13;&#10;Dispay segments which match the given regex pattern."></td>
           <td><input></td>
           <td><input></td>
           <td><input></td>
@@ -345,7 +347,7 @@
           <td><input></td>
         </tr>
         <tr id="excludeRegex">
-          <td><input placeholder="! .*" title="NOT, Regular expression"></td>
+          <td><input placeholder="! .*" title="NOT, Regular expression:&#13;&#10;Hide segments which match the given regex pattern."></td>
           <td><input></td>
           <td><input></td>
           <td><input></td>
@@ -353,7 +355,7 @@
           <td><input></td>
         </tr>
         <tr id="numberRange">
-          <td><input placeholder="1-2" title="Number range"></td>
+          <td><input placeholder="1-2" title="Number range:&#13;&#10;Dispay segments which match the given number range.&#13;&#10;Number ranges are defined by:&#13;&#10;&quot;number + hyphen + number&quot;"></td>
           <td><input disabled></td>
           <td><input disabled></td>
           <td><input disabled></td>
@@ -382,5 +384,9 @@
       </tbody>
     </table>
 <!-- Template End -->
+
+    <footer>
+      <p>Generated from <a href="https://shunsakurai.github.io/trans-diff/" rel="noopener noreferrer" target="blank_">Trans Diff</a> - See <a href="https://github.com/ShunSakurai/trans-diff#how-to-use" rel="noopener noreferrer" target="blank_">README</a></p>
+    </footer>
   </body>
 </html>

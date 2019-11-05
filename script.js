@@ -17,7 +17,6 @@ const compare = document.getElementById('compare');
 const message = document.getElementById('message');
 
 let files1, files2;
-// Support only one file at the moment
 
 drag1.addEventListener('dragover', function(e){
   e.preventDefault();
@@ -122,6 +121,7 @@ const hasError = function() {
   }
 };
 
+// TODO: give more specific error messages
 const displayError = function() {
   message.textContent = 'Error with files';
   setTimeout(function(){
