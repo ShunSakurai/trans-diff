@@ -21,8 +21,6 @@
   </div>
   <div class="message" id="message"></div>
 
-  <!-- Reference:
-  https://dianxnao.com/htmljs%EF%BC%9Atextarea%E3%82%BF%E3%82%B0%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%83%96%E3%83%A9%E3%82%A6%E3%82%B6%E3%82%92%E3%82%BF%E3%83%BC%E3%83%9F%E3%83%8A%E3%83%AB%E9%A2%A8%E3%81%AB%E8%A3%85/#toc5 -->
   <div class="converter">
     <h3 style="float: left;">Transifex URL converter - download XLIFF file</h3>
     <textarea class="terminal" id="terminal" spellcheck="false"></textarea>
