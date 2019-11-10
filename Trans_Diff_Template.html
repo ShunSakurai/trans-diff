@@ -267,6 +267,15 @@
     }
   };
 
+  var escapeHtml = function (text) {
+    var map = {
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&apos;'
+    };
+    return text.replace(/[&<>"']/g, function(m) {
+      return map[m];
+    });
+  };
+
   var openTextarea = function(td) {
     var textarea = document.createElement('TEXTAREA');
     textarea.value = td.textContent;
@@ -276,7 +285,7 @@
     textarea.focus();
     textarea.style.height = textarea.scrollHeight + 'px';
     textarea.addEventListener('blur', function() {
-      td.innerHTML = textarea.value;
+      td.innerHTML = escapeHtml(textarea.value);
     });
   };
 
@@ -386,7 +395,7 @@
 <!-- Template End -->
 
     <footer>
-      <p>Generated from <a href="https://shunsakurai.github.io/trans-diff/" rel="noopener noreferrer" target="blank_">Trans Diff</a> - See <a href="https://github.com/ShunSakurai/trans-diff#how-to-use" rel="noopener noreferrer" target="blank_">README</a></p>
+      <p>Generated from <a href="https://shunsakurai.github.io/trans-diff/" rel="noopener noreferrer" tabindex="-1" target="blank_">Trans Diff</a> - See <a href="https://github.com/ShunSakurai/trans-diff#how-to-use" rel="noopener noreferrer" tabindex="-1" target="blank_">README</a></p>
     </footer>
   </body>
 </html>

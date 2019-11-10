@@ -136,12 +136,12 @@ const compareContents = function(readers1, readers2) {
   for (let reader2 of readers2) {
     let [original, transId, source, target, percent, noteArrays] = parseXliff(reader2.result, 2);
     while (contents2.hasOwnProperty(original)) original = original + '_';
-    contents2[original] = {'target': target, 'note': noteArrays};
+    contents2[original] = {target: target, note: noteArrays};
   }
   for (let reader1 of readers1) {
     let [original, transId, source, target, percent, noteArrays] = parseXliff(reader1.result, 1);
     while (contents1.hasOwnProperty(original)) original = original + '_';
-    contents1[original] = {'source': source, 'target': target, 'note': noteArrays};
+    contents1[original] = {source: source, target: target, note: noteArrays};
 
     if (contents2.hasOwnProperty(original)) {
       results[original] = [];

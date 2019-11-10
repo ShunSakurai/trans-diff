@@ -43,6 +43,9 @@ const convertURLText = function(text) {
   if (match[3] == '$') {
     terminal.value += terminalManual;
     return `${match[1]}/language/${match[2]}`;
+  } else if (match[3].endsWith('xliff')) {
+    terminal.value += terminalDownloading;
+    return `${match[1]}/${match[3]}/${match[2]}/download/for_translation`;
   } else {
     terminal.value += terminalDownloading;
     return `${match[1]}/${match[3]}/${match[2]}/download/xliff`;
