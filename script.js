@@ -116,14 +116,14 @@ const hasError = function() {
     (!Array.from(files1).every(file => ['xlf', 'mqxliff', 'mxliff'].indexOf(file.name.split('.').pop()) >= 0)) ||
     (!Array.from(files2).every(file => ['xlf', 'mqxliff', 'mxliff'].indexOf(file.name.split('.').pop()) >= 0))
   ) {
-    displayError();
+    displayError('Error with files');
     return true;
   }
 };
 
 // TODO: give more specific error messages
-const displayError = function() {
-  message.textContent = 'Error with files';
+const displayError = function(errorMessage) {
+  message.textContent = errorMessage;
   setTimeout(function(){
     message.textContent = '';
   }, 5000);
@@ -143,6 +143,13 @@ const compareContents = function(readers1, readers2) {
     while (contents1.hasOwnProperty(original)) original = original + '_';
     contents1[original] = {source: source, target: target, note: noteArrays};
 
+    if (readers1.length == 1 && readers2.length == 1) {
+      let onlyOriginal2 = Object.keys(contents2)[0];
+      if (onlyOriginal2 != original) {
+        contents2[original] = contents2[onlyOriginal2];
+        delete contents2[onlyOriginal2];
+      }
+    }
     if (contents2.hasOwnProperty(original)) {
       results[original] = [];
       for (let i = 0; i < contents1[original].target.length; i++) {
@@ -156,7 +163,11 @@ const compareContents = function(readers1, readers2) {
       }
     }
   }
-  displayResults(results);
+  if (!Object.keys(results).length) {
+    displayError('No matching files');
+  } else {
+    displayResults(results);
+  }
 };
 
 const parseXliff = function(content) {
