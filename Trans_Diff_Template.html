@@ -292,8 +292,9 @@
   var sortTable = function(th) {
     var tableBody = th.parentNode.parentNode;
     var header = th.parentNode;
-    for (var i = 0; i <= header.children.length - 1; i++) header.children[i].textContent = header.children[i].textContent.replace('↓', '');
-    th.textContent = th.textContent += '↓';
+    var ths = header.children;
+    for (var i = 0; i <= ths.length - 1; i++) ths[i].textContent = ths[i].textContent.replace('↓', '');
+    if (Array.from(ths).indexOf(th) > 0) th.textContent = th.textContent += '↓';
     var indexTh = 0;
     while ((th = th.previousElementSibling)) indexTh++;
 
