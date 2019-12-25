@@ -46,6 +46,10 @@
     buttonTags = document.getElementById('buttonTags');
     buttonTags.innerHTML = `${buttonTags.dataset.on ? 'Collapse' : 'Expand'} <u>T</u>ags`;
 
+    Array.from(document.querySelectorAll('.filename')).forEach(function(span) {
+      span.addEventListener('click', toggleTbody);
+    })
+
     Array.from(document.querySelectorAll('#filter input')).forEach(function(input) {
       input.value = input.name;
       input.removeAttribute('name');
@@ -248,14 +252,30 @@
     Array.from(document.querySelectorAll('#filter input')).forEach(function(input) {
       input.name = input.value;
     });
-    var blob = new Blob(['<!DOCTYPE html><html>', document.documentElement.innerHTML, '</html>']);
+    var blob = new Blob(['<!DOCTYPE html>', document.documentElement.outerHTML]);
     var link = document.createElement('A');
     link.download = decodeURI(window.location.pathname.split('/').pop());
     link.href = URL.createObjectURL(blob);
     link.click();
   };
 
-  var toggleTbody = function(span) {
+  var filterCurrentView = function(div) {
+    var children = div.children;
+    if (div.style.display == 'None') return `<div class="main">${children[0].outerHTML}</div>`;
+    return '<div class="main">' + children[0].outerHTML + '<table border="1" class="results"><tbody>' + Array.from(children[1].firstElementChild.children).filter(tr => tr.style.display != 'none').map(tr => tr.outerHTML).join('') + '</tbody></table></div>';
+  };
+
+  var saveStaticView = function() {
+    var mainHTML = Array.from(document.querySelectorAll('.main')).map(div => filterCurrentView(div)).join('\n');
+    var blob = new Blob(['<!DOCTYPE html><html><head>', Array.from(document.querySelector('head').children).slice(0, 4).map(headEl => headEl.outerHTML).join('').replace('<title>', '<title>Static_'), '</head><body>', mainHTML, document.querySelector('footer').outerHTML, '</body></html>']);
+    var link = document.createElement('A');
+    link.download = decodeURI('Static_' + window.location.pathname.split('/').pop());
+    link.href = URL.createObjectURL(blob);
+    link.click();
+  };
+
+  var toggleTbody = function(event) {
+    var span = event.target;
     var h2 = span.parentNode;
     var tbody = h2.nextSibling.nextSibling;
     if (h2.textContent[0] === '▼') {
@@ -267,7 +287,7 @@
     }
   };
 
-  var escapeHtml = function (text) {
+  var escapeHtml = function(text) {
     var map = {
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&apos;'
     };
@@ -329,6 +349,7 @@
       <button id="buttonUnchanged" onclick="toggleUnchanged()" style="font-size: 16px;">Hide <u>U</u>nchanged Segments</button>
       <button id="buttonTags" onclick="toggleTags()" style="font-size: 16px;">Expand <u>T</u>ags</button>
       <button id="buttonResave" onclick="resaveFile()" style="font-size: 16px; float: right;">Resave File</button>
+      <button id="buttonSaveStatic" onclick="saveStaticView()" style="font-size: 16px; float: right;">Save Static View</button>
 
     <table id="filter">
       <tbody>
@@ -379,20 +400,22 @@
     </div>
 
 <!-- Template Start -->
-    <h2><span onclick="toggleTbody(this)"><small>▼</small>{ph1}</span></h2>
-    <table border="1" class="results">
-      <tbody>
-        <tr>
-          <th class="id">ID</th>
-          <th class="string">Source</th>
-          <th class="string">Target (File1)</th>
-          <th class="string">Target (File2)</th>
-          <th class="percent">%</th>
-          <th class="note">Note</th>
-        </tr>
-{ph2}
-      </tbody>
-    </table>
+    <div class="main">
+      <h2><span class="filename"><small>▼</small>{ph1}</span></h2>
+      <table border="1" class="results">
+        <tbody>
+          <tr>
+            <th class="id">ID</th>
+            <th class="string">Source</th>
+            <th class="string">Target (File1)</th>
+            <th class="string">Target (File2)</th>
+            <th class="percent">%</th>
+            <th class="note">Note</th>
+          </tr>
+  {ph2}
+        </tbody>
+      </table>
+    </div>
 <!-- Template End -->
 
     <footer>
