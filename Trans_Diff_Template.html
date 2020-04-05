@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="description" content="Generated from Trans Diff - https://shunsakurai.github.io/trans-diff/">
     <!-- Reference for footer CSS: https://qiita.com/nozomi716/items/2b09d5bce3d08d1c41f9 -->
-    <style type="text/css">
+    <style>
       body { display: flex; flex-direction: column; min-height: 100vh; }
       button { font-family: sans-serif; margin-bottom: 10px; margin-top: 5px; }
       button, th { background: #155799; color: #fff; margin-right: 5px; opacity: 0.7; }
@@ -14,8 +14,9 @@
       input { width: 100%; }
       ins { color: green; }
       small { font-size: 75%; }
-      table { border-collapse: collapse; table-layout: fixed; white-space: pre-wrap; width: 100%; }
-      td { word-wrap: break-word; }
+      table { border: 1px; border-collapse: collapse; table-layout: fixed; white-space: pre-wrap; width: 100%; }
+      td { border: 1px solid black; word-wrap: break-word; }
+      th { border: 1px solid black; }
       textarea { margin: 0; width: 100%; }
       .different { background: #dff; }
       .id { width: 7%; }
@@ -25,7 +26,7 @@
       .tag { opacity: 0.5; }
     </style>
 
-  <script type="text/javascript">
+  <script>
   document.styleIndices = {};
   document.displayNone = {};
   let buttonUnchanged, buttonTags;
@@ -262,7 +263,7 @@
   var filterCurrentView = function(div) {
     var children = div.children;
     if (div.style.display == 'None') return `<div class="main">${children[0].outerHTML}</div>`;
-    return '<div class="main">' + children[0].outerHTML + '<table border="1" class="results"><tbody>' + Array.from(children[1].firstElementChild.children).filter(tr => tr.style.display != 'none').map(tr => tr.outerHTML).join('') + '</tbody></table></div>';
+    return '<div class="main">' + children[0].outerHTML + '<table class="results"><tbody>' + Array.from(children[1].firstElementChild.children).filter(tr => tr.style.display != 'none').map(tr => tr.outerHTML).join('') + '</tbody></table></div>';
   };
 
   var saveStaticView = function() {
@@ -402,7 +403,7 @@
 <!-- Template Start -->
     <div class="main">
       <h2><span class="filename"><small>▼</small>{ph1}</span></h2>
-      <table border="1" class="results">
+      <table class="results">
         <tbody>
           <tr>
             <th class="id">ID</th>

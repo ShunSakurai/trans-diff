@@ -237,7 +237,7 @@ const combineNote = function(noteArray1, noteArray2) {
   for (let i = 0; i < noteArray2.length; i ++) {
     if (noteArray2[i]) combinedNoteArray.push(`(2) ${noteArray2[i]}\n`);
   }
-  return [...new Set(combinedNoteArray)];
+  return [...new Set(combinedNoteArray)].join('\n');
 };
 
 const diffDP = function(stringArray1, stringArray2) {
