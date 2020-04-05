@@ -26,7 +26,7 @@ It's pretty straight forward.
 Supported file types:
 
 - .xlf ([XLIFF version 1.2](http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html) - intended for [XLIFF files downloaded from Transifex](https://docs.transifex.com/projects/downloading-translations#section-downloading-translations-for-a-specific-language))
-- .mqxliff (.mqxlz not supported at the moment)
+- .mqxliff (.mqxlz not supported at the moment. To export .mqxliff files from memoQ, unselect all checkboxes under "memoQ XLIFF" in "Bilingual export wizard")
 - .mxliff
 
 Limitations:

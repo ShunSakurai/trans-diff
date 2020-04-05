@@ -22,11 +22,16 @@
   </div>
   <div class="message" id="message"></div>
 
-  <div class="converter">
+  <div class="converter subsection">
     <h3 style="float: left;">Transifex URL converter - download XLIFF file</h3>
     <textarea class="terminal" id="terminal" spellcheck="false"></textarea>
   </div>
 
+</div>
+
+<div class="subsection">
+  <p>See <a href="https://github.com/ShunSakurai/trans-diff#how-to-use" rel="noopener oreferrer" tabindex="-1" target="blank_">README</a> and the video:</p>
+  <iframe width="448" height="332" src="https://www.youtube.com/embed/-zuSH3Bl_x0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 
 <script src="script.js" type="text/javascript" charset="utf-8" async defer></script>
