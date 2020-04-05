@@ -347,7 +347,7 @@ const displayResults = function(results) {
             `<title>Trans_Diff_${Object.keys(results)[0]}</title>`
           ).replace(
             templateMatch[0],
-            Object.keys(resultTables).map(original => templateMatch[1].replace('{ph1}', original).replace('{ph2}', resultTables[original])).join('\n')
+            Object.keys(resultTables).map(original => templateMatch[1].replace('{ph1}', original).replace('{ph2}', resultTables[original].replace('$', '&#36;'))).join('\n')
           )
         ], {type: 'text/html'});
         let resultURL = window.URL.createObjectURL(resultBlob);
