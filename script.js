@@ -366,6 +366,9 @@ const displayResults = function(results) {
       reader.readAsText(request.response);
   };
   request.send();
+
+  // nasty tight coupling
+  terminal.focus();
 };
 
 })();
