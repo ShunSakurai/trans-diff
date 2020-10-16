@@ -2,12 +2,11 @@
 
 const regexTransifex = new RegExp('(https://www.transifex.com/[^/]+/[^/]+)/translate/#([^/]+)/([^/]+?)($|[/?])');
 const terminal = document.getElementById('terminal');
-const terminalPaste = 'Paste the editor URL and press Enter: ';
-const terminalDownloading = 'Downloading the XLIFF file from: ';
-const terminalManual = 'Please download the XLIFF file manually from: ';
+const terminalPaste = 'Paste the editor URL and press Enter:\n';
+const terminalDownloading = 'Downloading the XLIFF file from:\n';
+const terminalManual = 'Please download the XLIFF file manually from:\n';
 const terminalError = 'Sorry, the URL doesn\'t look right.';
 terminal.value += terminalPaste;
-terminal.focus();
 let previousInput;
 
 terminal.addEventListener('click', function(e) {

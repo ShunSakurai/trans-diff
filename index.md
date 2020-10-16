@@ -1,10 +1,10 @@
-<!-- Last updated on Jun 2, 2020 -->
+<!-- Last update on Oct 16, 2020 -->
 <div class="content">
 
   <div class="file file1">
     <h1>File 1</h1>
     <div class="drag" id="drag1" title="Supported files:&#13;&#10;- .xlf&#13;&#10;- .mqxliff&#13;&#10;- .mxliff">
-      <p class="center top40" id="filename1">Drag file(s) here or click to browse</p>
+      <p class="center top25" id="filename1">File(s) exported before review - drag here or click to browse</p>
       <input id="fileinput1" name="fileinput1" style="display: none;" type="file" multiple>
     </div>
   </div>
@@ -12,7 +12,7 @@
   <div class="file file2">
     <h1>File 2</h1>
     <div class="drag" id="drag2" title="Supported files:&#13;&#10;- .xlf&#13;&#10;- .mqxliff&#13;&#10;- .mxliff">
-      <p class="center top40" id="filename2">Drag file(s) here or click to browse</p>
+      <p class="center top25" id="filename2">Updated file(s) - drag here or click to browse</p>
       <input id="fileinput2" name="fileinput2" style="display: none;" type="file" multiple>
     </div>
   </div>
@@ -24,7 +24,7 @@
 
   <div class="converter subsection">
     <h3 style="float: left;">Transifex URL converter - download XLIFF file</h3>
-    <textarea class="terminal" id="terminal" spellcheck="false"></textarea>
+    <textarea autofocus="true" class="terminal" id="terminal" spellcheck="false"></textarea>
   </div>
 
 </div>
