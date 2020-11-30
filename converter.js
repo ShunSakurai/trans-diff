@@ -21,7 +21,7 @@ terminal.addEventListener('keyup', function(e) {
   const textareaValues = currentValue.split('\n');
   if (e.key == 'Enter') {
     if (currentValue.match(/\n$/) == null) return;
-    previousInput = textareaValues[textareaValues.length-2].replace(terminalPaste, '');
+    previousInput = textareaValues[textareaValues.length-2];
     const convertedURL = convertURLText(previousInput);
     if (convertedURL) {
       terminal.value += convertedURL + '\n\n' + terminalPaste;
@@ -31,8 +31,11 @@ terminal.addEventListener('keyup', function(e) {
     }
     terminal.scrollTop = terminal.scrollHeight;
   } else if (e.key == 'ArrowUp') {
-    terminal.value = textareaValues.slice(0, textareaValues.length - 1).join('\n') + '\n' + terminalPaste + previousInput;
+    e.preventDefault();
+    terminal.value = textareaValues.slice(0, textareaValues.length - 1).join('\n') + '\n' + previousInput;
     terminal.scrollTop = terminal.scrollHeight;
+    const length = terminal.value.length;
+    if (terminal.selectionEnd < length) terminal.setSelectionRange(length, length);
   }
 });
 
