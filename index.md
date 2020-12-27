@@ -1,4 +1,4 @@
-<!-- Last update on Nov 30, 2020 -->
+<!-- Last update on Dec 27, 2020 -->
 <div class="content">
 
   <div class="file file1">
@@ -24,7 +24,7 @@
 
   <div class="converter subsection">
     <h3 style="float: left;">Transifex URL converter - download XLIFF file</h3>
-    <textarea autofocus="true" class="terminal" id="terminal" spellcheck="false"></textarea>
+    <textarea class="terminal" id="terminal" spellcheck="false"></textarea>
   </div>
 
 </div>

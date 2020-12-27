@@ -15,8 +15,17 @@ const fileinput1 = document.getElementById('fileinput1');
 const fileinput2 = document.getElementById('fileinput2');
 const compare = document.getElementById('compare');
 const message = document.getElementById('message');
+// const terminal = document.getElementById('terminal');
 
 let files1, files2;
+
+const focusTerminalWOScrolling = function() {
+  terminal.focus({preventScroll: true});
+};
+
+window.addEventListener('load', function(e){
+  focusTerminalWOScrolling();
+});
 
 drag1.addEventListener('dragover', function(e){
   e.preventDefault();
@@ -367,8 +376,7 @@ const displayResults = function(results) {
   };
   request.send();
 
-  // nasty tight coupling
-  terminal.focus();
+  focusTerminalWOScrolling();
 };
 
 })();
