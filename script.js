@@ -163,8 +163,8 @@ const compareContents = function(readers1, readers2) {
       results[original] = [];
       for (let i = 0; i < contents1[original].target.length; i++) {
         let shortSource = contents1[original].source[i]? tagToPlaceholder(contents1[original].source[i]): '';
-        let stringArray1 = contents1[original].target[i]? tagAsOneChar(contents1[original].target[i]): [];
-        let stringArray2 = (contents2[original].target.hasOwnProperty(i) && contents2[original].target[i])? tagAsOneChar(contents2[original].target[i]): [];
+        let stringArray1 = contents1[original].target[i]? tagAndWordAsOneChar(contents1[original].target[i]): [];
+        let stringArray2 = (contents2[original].target.hasOwnProperty(i) && contents2[original].target[i])? tagAndWordAsOneChar(contents2[original].target[i]): [];
         let [dpTable, distance] = diffDP(stringArray1, stringArray2);
         let [diffString1, diffString2] = diffSES(dpTable, stringArray1, stringArray2);
         let combinedNote = combineNote(contents1[original].note[i], contents2[original].note[i]);
@@ -215,7 +215,7 @@ const convertXMLEntities = function(string) {
   return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 };
 
-const tagAsOneChar = function(string) {
+const tagAndWordAsOneChar = function(string) {
   let stringArray = [];
   let match;
   while (match = /(<ph[^>]*?>.*?<\/ph[^>]*?>|&lt;.*?&gt;)/g.exec(string)) {
@@ -223,7 +223,7 @@ const tagAsOneChar = function(string) {
     stringArray.push(`<span class="tag" title="${match[0].startsWith('<ph')? convertXMLEntities(match[0]): match[0]}">⬣</span>`);
     string = string.substring(match.index + match[0].length);
   }
-  stringArray.push(...string.split(''));
+  stringArray.push(...string.split(/((?<=[^A-Za-zÀ-ȕ])|(?=[^A-Za-zÀ-ȕ]))/g).filter(string => string.length >= 1));
   return stringArray;
 };
 
