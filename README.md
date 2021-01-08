@@ -29,6 +29,11 @@ Supported file types:
 - .mqxliff (.mqxlz not supported at the moment. To export .mqxliff files from memoQ, unselect all checkboxes under "memoQ XLIFF" in "Bilingual export wizard")
 - .mxliff
 
+Diff specs:
+
+- The diff is created based on [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance)
+- The comparison is character-based for full-width characters (e.g. Japanese) and word-based for half-width characters (e.g. English)
+
 Limitations:
 
 - Basically, the number of segments/strings needs to be the same between File 1 and File 2.
