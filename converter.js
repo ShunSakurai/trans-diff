@@ -4,7 +4,7 @@ const regexTransifex = new RegExp('(https://www.transifex.com/[^/]+/[^/]+)/trans
 const terminal = document.getElementById('terminal');
 const terminalPaste = 'Paste the editor URL and press Enter:\n';
 const terminalDownloading = 'Downloading the XLIFF file from:\n';
-const terminalManual = 'Please download the XLIFF file manually from:\n';
+const terminalManual = 'The URL seems to be "All resources" view. Please select the resource and manually download the XLIFF file from:\n';
 const terminalError = 'Sorry, the URL doesn\'t look right.';
 terminal.value += terminalPaste;
 let previousInput;
