@@ -21,12 +21,14 @@ Please watch the "How to use" video on YouTube for details:
 
 It's pretty straight forward.
 - Export XLIFF files at the start and the end of the review.
+  - For Transifex, use [Transifex URL converter](https://shunsakurai.github.io/trans-diff/) or click "Download for translation as XLIFF"
+  - For memoQ, click "Export" > "Export Bilingual", and unselect "Save a compressed file (.mqxlz)"
 - Choose XLIFF files (File 1 and File 2) and click "Compare". The diff file will be downloaded automatically.
 
 Supported file types:
 
-- .xlf ([XLIFF version 1.2](http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html) - intended for [XLIFF files downloaded from Transifex](https://docs.transifex.com/projects/downloading-translations#section-downloading-translations-for-a-specific-language))
-- .mqxliff (.mqxlz not supported at the moment. To export .mqxliff files from memoQ, unselect all checkboxes under "memoQ XLIFF" in "Bilingual export wizard")
+- .xlf ([XLIFF version 1.2](http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html))
+- .mqxliff (.mqxlz not supported at the moment)
 - .mxliff
 
 Diff specs:
