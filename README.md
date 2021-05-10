@@ -52,6 +52,12 @@ Limitations:
 Trans Diff has a Transifex URL converter. The URL of the editor `https://www.transifex.com/{organization}/{project}/translate/#{lang}/{resource}/{stringId}?{query}` is converted to `https://www.transifex.com/{organization}/{project}/{resource}/{lang}/download/xliff` and the translation is downloaded as an XLIFF file. This corresponds with the "Download for translation as XLIFF" button in Transifex.
 It's useful to download the XLIFF files before and after you do translation or review in Tranifex. *Please note that this is not an official feature of Transifex.*
 
+Usage:
+
+- Paste the Transifex editor URL in the converter (which looks like Terminal / Command Prompt), *move cursor at the end of the line*, and press Enter key to download the XLIFF file
+- You can reference the previous input by pressing Arrow Up key
+- You can add "for_use" command before the URL to download the "for_use" file (`for_use https://www.transifex.com/{organization}/{project}/translate/#{lang}/{resource}/{stringId}?{query}`)
+
 ## Motivation and inspiration
 
 Originally I wanted to compare .mqxlz files but the project has been dormant because it was tricky to implement the code to unzip files in client JavaScript. It seems .mqxlz is a ZIP64 format.
