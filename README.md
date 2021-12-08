@@ -4,12 +4,15 @@ Create a filterable, commentable diff table from XLIFF files
 
 [https://shunsakurai.github.io/trans-diff/](https://shunsakurai.github.io/trans-diff/)
 
-## Roadmap
+## Roadmap and update history
 
 - [x] Support single file
 - [x] Support multiple files (detect file IDs)
 - [x] Save comments
 - [ ] Unzip .mqxlz files
+- [x] Implement Transifex URL converter
+
+- ⏱ Transifex URL converter doesn't directly download the XLIFF file anymore
 
 ## How to use
 
@@ -20,10 +23,10 @@ Please watch the "How to use" video on YouTube for details:
 ### How to generate the diff file
 
 It's pretty straight forward.
-- Export XLIFF files at the start and the end of the review.
-  - For Transifex, use [Transifex URL converter](https://shunsakurai.github.io/trans-diff/) or click "Download for translation as XLIFF"
+1. Export XLIFF files at the start and the end of the review.
+  - For Transifex, click "Download for translation as XLIFF" (or "Download for use" when the source file is an XLIFF file)
   - For memoQ, click "Export" > "Export Bilingual", and unselect "Save a compressed file (.mqxlz)"
-- Choose XLIFF files (File 1 and File 2) and click "Compare". The diff file will be downloaded automatically.
+1. Choose XLIFF files (File 1 and File 2) and click "Compare". The diff file will be downloaded automatically.
 
 Supported file types:
 
@@ -49,14 +52,12 @@ Limitations:
 
 ### Downloading XLIFF files
 
-Trans Diff has a Transifex URL converter. The URL of the editor `https://www.transifex.com/{organization}/{project}/translate/#{lang}/{resource}/{stringId}?{query}` is converted to `https://www.transifex.com/{organization}/{project}/{resource}/{lang}/download/xliff` and the translation is downloaded as an XLIFF file. This corresponds with the "Download for translation as XLIFF" button in Transifex.
-It's useful to download the XLIFF files before and after you do translation or review in Tranifex. *Please note that this is not an official feature of Transifex.*
+Trans Diff has a Transifex URL converter. The URL of the editor `https://www.transifex.com/{organization}/{project}/translate/#{lang}/{resource}/{stringId}?{query}` is converted to `https://www.transifex.com/{organization}/{project}/{resource}` and you can download the XLIFF file by selecting your language and pressing the "Download for translation as XLIFF" button. It's useful to download the XLIFF files before and after you do translation or review in Tranifex. *Please note that this is not an official feature of Transifex.*
 
 Usage:
 
 - Paste the Transifex editor URL in the converter (which looks like Terminal / Command Prompt), *move cursor at the end of the line*, and press Enter key to download the XLIFF file
 - You can reference the previous input by pressing Arrow Up key
-- You can add "for_use" command before the URL to download the "for_use" file (`for_use https://www.transifex.com/{organization}/{project}/translate/#{lang}/{resource}/{stringId}?{query}`)
 
 ## Motivation and inspiration
 

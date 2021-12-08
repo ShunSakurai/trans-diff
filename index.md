@@ -1,4 +1,4 @@
-<!-- Last update on May 10, 2021 v2 -->
+<!-- Last update on Dec 9, 2021 -->
 <div class="content">
 
   <div class="file file1">
@@ -25,6 +25,7 @@
   <div class="converter subsection">
     <h3 style="float: left;">Transifex URL converter - download XLIFF file</h3>
     <textarea class="terminal" id="terminal" spellcheck="false"></textarea>
+    <small class="note">* The behavior of Transifex changed, and we no longer can download the XLIFF file directly using this converter. Instead, the converter opens the resource page so please manually download the XLIFF file from that page.</small>
   </div>
 
 </div>
