@@ -30,12 +30,14 @@
 
 </div>
 
-<div class="subsection">
-  <h3 style="float: left;">Documentation</h3>
-  <p>See <a href="https://github.com/ShunSakurai/trans-diff#how-to-use" rel="noopener oreferrer" tabindex="-1" target="blank_">README</a> and the video:</p>
-  <iframe width="448" height="332" src="https://www.youtube.com/embed/-zuSH3Bl_x0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  You might be interested in other tools by the developer:
-  - [Kinsoku Checker](https://shunsakurai.github.io/kinsoku-checker/)
+<div>
+  <h3>Documentation</h3>
+    Please see <a href="https://github.com/ShunSakurai/trans-diff#how-to-use" rel="noopener oreferrer" tabindex="-1" target="blank_">README</a> and the video:
+    <iframe width="448" height="332" src="https://www.youtube.com/embed/-zuSH3Bl_x0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<div>
+You might be interested in other tools by the developer:
+- <a href="https://shunsakurai.github.io/kinsoku-checker/" rel="noopener oreferrer" tabindex="-1" target="blank_">Kinsoku Checker</a>
 </div>
 
 <script src="script.js" type="text/javascript" charset="utf-8" async defer></script>
