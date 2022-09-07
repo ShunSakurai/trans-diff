@@ -29,6 +29,7 @@
   <script>
   document.styleIndices = {};
   document.displayNone = {};
+  document.unsavedChanges = false;
   let buttonUnchanged, buttonTags;
 
   window.addEventListener('load', function() {
@@ -57,6 +58,7 @@
       filterSegments(input, input.parentNode.parentNode.id);
       input.addEventListener('input', function(event) {
         filterSegments(event.target, event.target.parentNode.parentNode.id);
+        document.unsavedChanges = true;
       });
     });
   });
@@ -211,6 +213,7 @@
     });
     var allTr = document.querySelectorAll('.results tr');
     toggleSegmentVisibility(allTr);
+    document.unsavedChanges = false;
   };
 
   var toggleUnchanged = function() {
@@ -258,6 +261,7 @@
     link.download = decodeURI(window.location.pathname.split('/').pop());
     link.href = URL.createObjectURL(blob);
     link.click();
+    document.unsavedChanges = false;
   };
 
   var filterCurrentView = function(div) {
@@ -273,6 +277,7 @@
     link.download = decodeURI('Static_' + window.location.pathname.split('/').pop());
     link.href = URL.createObjectURL(blob);
     link.click();
+    document.unsavedChanges = false;
   };
 
   var toggleTbody = function(event) {
@@ -308,6 +313,9 @@
     textarea.addEventListener('blur', function() {
       td.innerHTML = escapeHtml(textarea.value);
     });
+    textarea.addEventListener('input', function() {
+        document.unsavedChanges = true;
+    });
   };
 
   var sortTable = function(th) {
@@ -342,6 +350,13 @@
     if (target.nodeName == 'TD' && target.parentNode.parentNode.parentNode.classList.contains('results') && Array.from(target.parentNode.children).indexOf(target) == 5) openTextarea(target);
     if (target.nodeName == 'TH') sortTable(target);
   });
+
+  window.addEventListener('beforeunload', function(event) {
+    if (document.unsavedChanges) {
+      event.preventDefault();
+      return event.returnValue = '';
+    }
+  })
 
   </script>
   </head>
