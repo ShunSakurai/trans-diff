@@ -27,7 +27,6 @@
     </style>
 
   <script>
-  document.styleIndices = {};
   document.displayNone = {};
   document.unsavedChanges = false;
   let buttonUnchanged, buttonTags;
@@ -62,48 +61,6 @@
       });
     });
   });
-
-  var assessKey = function(event) {
-    if (event.ctrlKey || event.altKey || event.metaKey
-    || document.activeElement.nodeName === 'INPUT'
-    || document.activeElement.nodeName === 'TEXTAREA') {
-      return;
-    }
-    switch (event.keyCode) {
-      case 'C'.charCodeAt(0):
-        clearFilter();
-        break;
-      case 'T'.charCodeAt(0):
-        toggleTags();
-        break;
-      case 'U'.charCodeAt(0):
-        toggleUnchanged();
-        break;
-    }
-  };
-
-  document.addEventListener('keydown', assessKey);
-
-  var insertStyle = function(key, style) {
-    var styleSheet = document.styleSheets[0];
-    var styleLength = styleSheet.cssRules.length;
-    styleSheet.insertRule(style, styleLength);
-    document.styleIndices[key] = styleLength;
-  };
-
-  var deleteStyle = function(key) {
-    var styleSheet = document.styleSheets[0];
-    var removeIndex = document.styleIndices[key];
-    styleSheet.deleteRule(removeIndex);
-    delete document.styleIndices[key];
-    for (var otherKey in document.styleIndices) {
-      if (document.styleIndices.hasOwnProperty(otherKey) &&
-      typeof document.styleIndices[otherKey] === 'number' &&
-      document.styleIndices[otherKey] > removeIndex) {
-        document.styleIndices[otherKey] = document.styleIndices[otherKey] - 1;
-      }
-    }
-  };
 
   var toggleSegmentVisibility = function(allTr) {
     var displayNoneArray = new Array(allTr.length).fill(false);
@@ -337,11 +294,11 @@
         return a - b;
       }
     });
-    for (var i = tableBody.children.length - 1; i >= 1; i--) {
-      tableBody.removeChild(tableBody.children[i]);
+    for (var j = tableBody.children.length - 1; j >= 1; j--) {
+      tableBody.removeChild(tableBody.children[j]);
     }
-    for (var i = 0; i <= arrayTr.length - 1; i++) {
-      tableBody.appendChild(arrayTr[i]);
+    for (var k = 0; k <= arrayTr.length - 1; k++) {
+      tableBody.appendChild(arrayTr[k]);
     }
   };
 
@@ -349,6 +306,25 @@
     var target = event.target;
     if (target.nodeName == 'TD' && target.parentNode.parentNode.parentNode.classList.contains('results') && Array.from(target.parentNode.children).indexOf(target) == 5) openTextarea(target);
     if (target.nodeName == 'TH') sortTable(target);
+  });
+
+  document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey || event.altKey || event.metaKey
+    || document.activeElement.nodeName === 'INPUT'
+    || document.activeElement.nodeName === 'TEXTAREA') {
+      return;
+    }
+    switch (event.keyCode) {
+      case 'C'.charCodeAt(0):
+        clearFilter();
+        break;
+      case 'T'.charCodeAt(0):
+        toggleTags();
+        break;
+      case 'U'.charCodeAt(0):
+        toggleUnchanged();
+        break;
+    }
   });
 
   window.addEventListener('beforeunload', function(event) {
