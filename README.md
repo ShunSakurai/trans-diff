@@ -6,12 +6,14 @@ Create a filterable, commentable diff table from XLIFF files
 
 ## Roadmap and update history
 
+TODO:
 - [x] Support single file
 - [x] Support multiple files (detect file IDs)
 - [x] Save comments
 - [ ] Unzip .mqxlz files
 - [x] Implement Transifex URL converter
 
+Updates:
 - ⏱ Transifex URL converter doesn't directly download the XLIFF file anymore
 
 ## How to use
@@ -45,10 +47,15 @@ Limitations:
 
 ### How to use the diff file
 
-- You can filter the diff table with changed/unchanged status or with text (regular expression is supported) or number range. For details, please hover over the left-most column in each row. For example, you can display only the segments with any comments by putting a dot "." in the regular expression row above the Note column.
-- You can sort the table by columns by clicking the table header.
+- Filter the diff table with changed/unchanged status.
+- Expand or collapse tag contents.
+- The diff file opens in the darker mode if your computer is in dark mode. You can manually toggle the darker mode on or off.
+- Click "Save Static View" to save the current filtered view without JavaScript, for reduced file size and for better security. The static file is not commentable or filterable.
+- Click "Resave File" to save the full file.
+- Filter with text (contains text, NOT contains text, matches regex, NOT matches regex, and in number range). For details, please hover over the left-most column in each row. For example, you can display only the segments with any comments by putting a dot "." in the regular expression row above the Note column.
+- You can hide the table for a file by clicking "▼".
+- You can sort the table by a column by clicking the table header.
 - Click in the Note column to add comments. Please remember to resave the file after commenting, by pressing Ctrl/Cmd+S keys or clicking the "Resave File" button.
-- Click the "Save Static View" to save the current filtered view without JavaScript, for reduced file size and for better security. The static file is not commentable or filterable.
 
 ### Downloading XLIFF files
 

@@ -31,37 +31,6 @@
   document.unsavedChanges = false;
   let buttonUnchanged, buttonTags;
 
-  window.addEventListener('load', function() {
-    buttonUnchanged = document.getElementById('buttonUnchanged');
-    if (buttonUnchanged.dataset.on) {
-      var allTr = document.querySelectorAll('.results tr');
-      document.displayNone.unchanged = [];
-      for (var i = 0, n = allTr.length; i < n; i ++) {
-        if (allTr[i].classList.contains('same')) {
-          document.displayNone.unchanged.push(true);
-        } else {
-          document.displayNone.unchanged.push(false);
-        }
-      }
-    }
-    buttonTags = document.getElementById('buttonTags');
-    buttonTags.innerHTML = `${buttonTags.dataset.on ? 'Collapse' : 'Expand'} <u>T</u>ags`;
-
-    Array.from(document.querySelectorAll('.filename')).forEach(function(span) {
-      span.addEventListener('click', toggleTbody);
-    })
-
-    Array.from(document.querySelectorAll('#filter input')).forEach(function(input) {
-      input.value = input.name;
-      input.removeAttribute('name');
-      filterSegments(input, input.parentNode.parentNode.id);
-      input.addEventListener('input', function(event) {
-        filterSegments(event.target, event.target.parentNode.parentNode.id);
-        document.unsavedChanges = true;
-      });
-    });
-  });
-
   var toggleSegmentVisibility = function(allTr) {
     var displayNoneArray = new Array(allTr.length).fill(false);
     var n = allTr.length;
@@ -302,6 +271,18 @@
     }
   };
 
+  const toggleDarkerMode = function() {
+    var darkerModeStyle = document.querySelector('#darkerModeStyle');
+    var buttonDarker = document.querySelector('#buttonDarker');
+    if (darkerModeStyle.innerText) {
+      darkerModeStyle.innerText = '';
+      buttonDarker.innerHTML = 'Enable <u>D</u>arker Mode';
+    } else {
+      darkerModeStyle.innerText = 'body, input, textarea {background: lightgray; } .different { background: #bdd; }';
+      buttonDarker.innerHTML = 'Disable <u>D</u>arker Mode';
+    }
+  };
+
   document.addEventListener('click', function(event) {
     var target = event.target;
     if (target.nodeName == 'TD' && target.parentNode.parentNode.parentNode.classList.contains('results') && Array.from(target.parentNode.children).indexOf(target) == 5) openTextarea(target);
@@ -318,6 +299,9 @@
       case 'C'.charCodeAt(0):
         clearFilter();
         break;
+      case 'D'.charCodeAt(0):
+        toggleDarkerMode();
+        break;
       case 'T'.charCodeAt(0):
         toggleTags();
         break;
@@ -327,12 +311,49 @@
     }
   });
 
+  window.addEventListener('load', function() {
+    buttonUnchanged = document.getElementById('buttonUnchanged');
+    if (buttonUnchanged.dataset.on) {
+      var allTr = document.querySelectorAll('.results tr');
+      document.displayNone.unchanged = [];
+      for (var i = 0, n = allTr.length; i < n; i ++) {
+        if (allTr[i].classList.contains('same')) {
+          document.displayNone.unchanged.push(true);
+        } else {
+          document.displayNone.unchanged.push(false);
+        }
+      }
+    }
+    buttonTags = document.getElementById('buttonTags');
+    buttonTags.innerHTML = `${buttonTags.dataset.on ? 'Collapse' : 'Expand'} <u>T</u>ags`;
+
+    Array.from(document.querySelectorAll('.filename')).forEach(function(span) {
+      span.addEventListener('click', toggleTbody);
+    });
+
+    Array.from(document.querySelectorAll('#filter input')).forEach(function(input) {
+      input.value = input.name;
+      input.removeAttribute('name');
+      filterSegments(input, input.parentNode.parentNode.id);
+      input.addEventListener('input', function(event) {
+        filterSegments(event.target, event.target.parentNode.parentNode.id);
+        document.unsavedChanges = true;
+      });
+    });
+
+    var darkerModeStyle = document.createElement('style');
+    darkerModeStyle.id = 'darkerModeStyle';
+    document.head.appendChild(darkerModeStyle);
+
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) toggleDarkerMode();
+  });
+
   window.addEventListener('beforeunload', function(event) {
     if (document.unsavedChanges) {
       event.preventDefault();
       return event.returnValue = '';
     }
-  })
+  });
 
   </script>
   </head>
@@ -340,6 +361,7 @@
     <div class="header">
       <button id="buttonUnchanged" onclick="toggleUnchanged()" style="font-size: 16px;">Hide <u>U</u>nchanged Segments</button>
       <button id="buttonTags" onclick="toggleTags()" style="font-size: 16px;">Expand <u>T</u>ags</button>
+      <button id="buttonDarker" onclick="toggleDarkerMode()" style="font-size: 15px;">Enable <u>D</u>arker Mode</button>
       <button id="buttonResave" onclick="resaveFile()" style="font-size: 16px; float: right;">Resave File</button>
       <button id="buttonSaveStatic" onclick="saveStaticView()" style="font-size: 16px; float: right;">Save Static View</button>
 
