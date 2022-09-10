@@ -57,7 +57,7 @@ Header:
 - Click "Clear Filter" to erase all text in the filter.
 
 Table:
-- Click "▼" to hide the table for a file.
+- Click "▼" or the file name to hide the table for the file.
 - Left-click the table header to sort the table by the column.
 - Right-click the table header to hide other columns. It's useful for copy-pasting the column into a text editor.
 - Click in the Note column to add comments. Please remember to resave the file after commenting, by pressing Ctrl/Cmd+S keys or clicking "Resave File".

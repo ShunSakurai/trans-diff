@@ -208,6 +208,7 @@
 
   var toggleTbody = function(event) {
     var span = event.target;
+    if (span.nodeName == 'SMALL') span = span.parentNode;
     var h2 = span.parentNode;
     var tbody = h2.nextSibling.nextSibling;
     if (h2.textContent[0] === '▼') {
