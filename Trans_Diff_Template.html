@@ -244,6 +244,24 @@
     });
   };
 
+  var hideOtherColumns = function(th) {
+    var isFiltered = th.dataset.filtered;
+    var indexTh = Array.from(th.parentNode.children).indexOf(th);
+    var numOfColumns = th.parentNode.children.length;
+    var rows = Array.from(th.parentNode.parentNode.children);
+    rows.forEach(function(row) {
+      for (var i = 0; i < numOfColumns; i++) {
+        if (i == indexTh) continue;
+        row.children[i].style.display = isFiltered? '': 'none';
+      }
+    });
+    if (isFiltered) {
+      th.removeAttribute('data-filtered');
+    } else {
+      th.setAttribute('data-filtered', 'true');
+    }
+  };
+
   var sortTable = function(th) {
     var tableBody = th.parentNode.parentNode;
     var header = th.parentNode;
@@ -287,6 +305,14 @@
     var target = event.target;
     if (target.nodeName == 'TD' && target.parentNode.parentNode.parentNode.classList.contains('results') && Array.from(target.parentNode.children).indexOf(target) == 5) openTextarea(target);
     if (target.nodeName == 'TH') sortTable(target);
+  });
+
+  document.addEventListener('contextmenu', function(event) {
+    var target = event.target;
+    if (target.nodeName == 'TH') {
+      event.preventDefault();
+      hideOtherColumns(target);
+    }
   });
 
   document.addEventListener('keydown', function(event) {

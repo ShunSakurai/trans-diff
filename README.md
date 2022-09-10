@@ -47,15 +47,20 @@ Limitations:
 
 ### How to use the diff file
 
+Header:
 - Filter the diff table with changed/unchanged status.
 - Expand or collapse tag contents.
 - The diff file opens in the darker mode if your computer is in dark mode. You can manually toggle the darker mode on or off.
 - Click "Save Static View" to save the current filtered view without JavaScript, for reduced file size and for better security. The static file is not commentable or filterable.
 - Click "Resave File" to save the full file.
 - Filter with text (contains text, NOT contains text, matches regex, NOT matches regex, and in number range). For details, please hover over the left-most column in each row. For example, you can display only the segments with any comments by putting a dot "." in the regular expression row above the Note column.
-- You can hide the table for a file by clicking "▼".
-- You can sort the table by a column by clicking the table header.
-- Click in the Note column to add comments. Please remember to resave the file after commenting, by pressing Ctrl/Cmd+S keys or clicking the "Resave File" button.
+- Click "Clear Filter" to erase all text in the filter.
+
+Table:
+- Click "▼" to hide the table for a file.
+- Left-click the table header to sort the table by the column.
+- Right-click the table header to hide other columns. It's useful for copy-pasting the column into a text editor.
+- Click in the Note column to add comments. Please remember to resave the file after commenting, by pressing Ctrl/Cmd+S keys or clicking "Resave File".
 
 ### Downloading XLIFF files
 
