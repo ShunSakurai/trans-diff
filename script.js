@@ -234,7 +234,7 @@ const tagToPlaceholder = function(string) {
 const combineNote = function(noteArray1, noteArray2) {
   if (noteArray2 == undefined) return [...new Set(noteArray1.map(note => `(1) ${note}\n`))];
   let combinedNoteArray = [];
-  for (let i = 0; i < noteArray1.length; i ++) {
+  for (let i = 0; i < noteArray1.length; i++) {
     let index2 = noteArray2.indexOf(noteArray1[i]);
     if (index2 > -1) {
       delete noteArray2[index2];
@@ -243,7 +243,7 @@ const combineNote = function(noteArray1, noteArray2) {
       if (noteArray1[i]) combinedNoteArray.push(`(1) ${noteArray1[i]}\n`);
     }
   }
-  for (let i = 0; i < noteArray2.length; i ++) {
+  for (let i = 0; i < noteArray2.length; i++) {
     if (noteArray2[i]) combinedNoteArray.push(`(2) ${noteArray2[i]}\n`);
   }
   return [...new Set(combinedNoteArray)].join('\n');
@@ -337,7 +337,7 @@ const displayResults = function(results) {
   let resultTables = {};
   for (let original of Object.keys(results)) {
     let resultTable = '';
-    for (let i = 0; i < results[original].length; i ++) {
+    for (let i = 0; i < results[original].length; i++) {
       let editDistance = results[original][i].pop();
       resultTable += `<tr class="${editDistance? 'different': 'same'}"><td>${results[original][i].join('</td><td>')}</td></tr>\n`;
     }

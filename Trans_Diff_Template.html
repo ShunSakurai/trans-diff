@@ -27,6 +27,7 @@
     </style>
 
   <script>
+
   document.displayNone = {};
   document.unsavedChanges = false;
   let buttonUnchanged, buttonTags;
@@ -179,15 +180,21 @@
   };
 
   var resaveFile = function() {
+    var darkerModeStyle = document.querySelector('#darkerModeStyle');
+    var darkerModeWasEnabled = (darkerModeStyle && darkerModeStyle.innerText);
+    if (darkerModeWasEnabled) toggleDarkerMode();
     Array.from(document.querySelectorAll('#filter input')).forEach(function(input) {
       input.name = input.value;
     });
+
     var blob = new Blob(['<!DOCTYPE html>', document.documentElement.outerHTML]);
     var link = document.createElement('A');
     link.download = decodeURI(window.location.pathname.split('/').pop());
     link.href = URL.createObjectURL(blob);
     link.click();
+
     document.unsavedChanges = false;
+    if (darkerModeWasEnabled) toggleDarkerMode();
   };
 
   var filterCurrentView = function(div) {
@@ -197,6 +204,10 @@
   };
 
   var saveStaticView = function() {
+    var darkerModeStyle = document.querySelector('#darkerModeStyle');
+    var darkerModeWasEnabled = (darkerModeStyle && darkerModeStyle.innerText);
+    if (darkerModeWasEnabled) toggleDarkerMode();
+
     var mainHTML = Array.from(document.querySelectorAll('.main')).map(div => filterCurrentView(div)).join('\n');
     var blob = new Blob(['<!DOCTYPE html><html><head>', Array.from(document.querySelector('head').children).slice(0, 4).map(headEl => headEl.outerHTML).join('').replace('<title>', '<title>Static_'), '</head><body>', mainHTML, document.querySelector('footer').outerHTML, '</body></html>']);
     var link = document.createElement('A');
@@ -204,6 +215,8 @@
     link.href = URL.createObjectURL(blob);
     link.click();
     document.unsavedChanges = false;
+
+    if (darkerModeWasEnabled) toggleDarkerMode();
   };
 
   var toggleTbody = function(event) {
