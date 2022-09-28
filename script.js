@@ -187,7 +187,7 @@ const parseXliff = function(content) {
   let parsedPercent = [];
   let parsedNoteArrays = [];
   const trimmedContent = content.replace(/<mq:historical-unit[^]+?<\/mq:historical-unit>/g, '').replace(/<alt-trans[^]+?<\/alt-trans>/g, '');
-  const regexTransUnit = new RegExp('<trans-unit id="([^"]+?)"([^>]*?)>([^]+?)</trans-unit>', 'g');
+  const regexTransUnit = new RegExp('<trans-unit[^>]*? id="([^"]+?)"([^>]*?)>([^]+?)</trans-unit>', 'g');
   const regexPercent = new RegExp('(mq:percent|xmatch)="(\\d+)"');
   const regexSource = new RegExp('<source[^>]*?>([^]*?)</source>');
   const regexTarget = new RegExp('<target[^>]*?>([^]*?)</target>');

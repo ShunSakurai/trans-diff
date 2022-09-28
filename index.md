@@ -1,4 +1,3 @@
-<!-- Last update on Aug 3, 2022 -->
 <div class="content">
 
   <div class="file file1">
