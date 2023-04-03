@@ -1,6 +1,6 @@
 (function() {
 
-const regexTransifex = new RegExp('(https://www.transifex.com/[^/]+/[^/]+)/translate/#([^/]+)/([^/]+?)($|[/?])');
+const regexTransifex = new RegExp('(https://app.transifex.com/[^/]+/[^/]+)/translate/#([^/]+)/([^/]+?)($|[/?])');
 const terminal = document.getElementById('terminal');
 const terminalPaste = 'Paste the editor URL and press Enter:\n';
 const terminalDownloading = 'Please download the XLIFF file manually from:\n';

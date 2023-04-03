@@ -64,7 +64,7 @@ Table:
 
 ### Downloading XLIFF files
 
-Trans Diff has a Transifex URL converter. The URL of the editor `https://www.transifex.com/{organization}/{project}/translate/#{lang}/{resource}/{stringId}?{query}` is converted to `https://www.transifex.com/{organization}/{project}/{resource}` and you can download the XLIFF file by selecting your language and pressing the "Download for translation as XLIFF" button. It's useful to download the XLIFF files before and after you do translation or review in Tranifex. *Please note that this is not an official feature of Transifex.*
+Trans Diff has a Transifex URL converter. The URL of the editor `https://app.transifex.com/{organization}/{project}/translate/#{lang}/{resource}/{stringId}?{query}` is converted to `https://app.transifex.com/{organization}/{project}/{resource}` and you can download the XLIFF file by selecting your language and pressing the "Download for translation as XLIFF" button. It's useful to download the XLIFF files before and after you do translation or review in Tranifex. *Please note that this is not an official feature of Transifex.*
 
 Usage:
 
